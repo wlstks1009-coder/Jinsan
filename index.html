@@ -1,0 +1,1207 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SIGNAL — AI 무역 리스크 조기경보 플랫폼</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Noto+Sans+KR:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #08090d;
+    --surface: #0f1117;
+    --surface2: #161820;
+    --border: rgba(255,255,255,0.07);
+    --text: #e8eaf0;
+    --muted: #6b7280;
+    --accent: #00e5b4;
+    --accent2: #ff4d6d;
+    --accent3: #fbbf24;
+    --warn: #f97316;
+    --safe: #10b981;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* Custom cursor */
+  .cursor {
+    width: 10px; height: 10px;
+    background: var(--accent);
+    border-radius: 50%;
+    position: fixed;
+    top: 0; left: 0;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%,-50%);
+    transition: transform 0.1s, width 0.2s, height 0.2s, background 0.2s;
+    mix-blend-mode: difference;
+  }
+  .cursor-ring {
+    width: 36px; height: 36px;
+    border: 1.5px solid var(--accent);
+    border-radius: 50%;
+    position: fixed;
+    top: 0; left: 0;
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%,-50%);
+    transition: transform 0.18s ease, width 0.2s, height 0.2s, opacity 0.2s;
+    opacity: 0.6;
+  }
+
+  /* Noise overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9997;
+    opacity: 0.4;
+  }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 20px 48px;
+    display: flex; justify-content: space-between; align-items: center;
+    background: linear-gradient(to bottom, rgba(8,9,13,0.95), transparent);
+    backdrop-filter: blur(2px);
+  }
+  .nav-logo {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.1rem; font-weight: 800;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+  }
+  .nav-links { display: flex; gap: 32px; list-style: none; }
+  .nav-links a {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem; letter-spacing: 0.1em;
+    color: var(--muted);
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--accent); }
+
+  /* ─── HERO ─── */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column; justify-content: flex-end;
+    padding: 0 48px 80px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-bg-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(0,229,180,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,229,180,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse 80% 70% at 50% 50%, black, transparent);
+  }
+
+  .hero-scan {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    animation: scan 4s linear infinite;
+    opacity: 0.5;
+  }
+  @keyframes scan {
+    0% { top: 0; }
+    100% { top: 100%; }
+  }
+
+  .hero-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem; color: var(--accent);
+    letter-spacing: 0.15em; text-transform: uppercase;
+    margin-bottom: 24px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.2s forwards;
+  }
+
+  .hero-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(3.5rem, 10vw, 9rem);
+    font-weight: 800;
+    line-height: 0.92;
+    letter-spacing: -0.03em;
+    opacity: 0;
+    animation: fadeUp 0.9s 0.35s forwards;
+  }
+  .hero-title .accent-word { color: var(--accent); }
+  .hero-title .dim-word { color: var(--muted); }
+
+  .hero-sub {
+    margin-top: 32px;
+    max-width: 560px;
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--muted);
+    opacity: 0;
+    animation: fadeUp 0.9s 0.5s forwards;
+  }
+
+  .hero-meta {
+    margin-top: 40px;
+    display: flex; gap: 32px; align-items: center;
+    opacity: 0;
+    animation: fadeUp 0.9s 0.65s forwards;
+  }
+  .hero-meta-item {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+  }
+  .hero-meta-item span { color: var(--text); }
+
+  .hero-cta {
+    display: inline-flex; align-items: center; gap: 10px;
+    margin-top: 48px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--bg);
+    background: var(--accent);
+    padding: 14px 28px;
+    border: none;
+    text-decoration: none;
+    font-weight: 500;
+    transition: transform 0.2s, box-shadow 0.2s;
+    opacity: 0;
+    animation: fadeUp 0.9s 0.8s forwards;
+  }
+  .hero-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 36px rgba(0,229,180,0.25);
+  }
+
+  .hero-scroll-hint {
+    position: absolute; bottom: 32px; right: 48px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem; color: var(--muted);
+    letter-spacing: 0.15em; text-transform: uppercase;
+    writing-mode: vertical-rl;
+    display: flex; align-items: center; gap: 12px;
+    opacity: 0;
+    animation: fadeIn 1s 1.2s forwards;
+  }
+  .hero-scroll-hint::before {
+    content: '';
+    width: 1px; height: 48px;
+    background: linear-gradient(to bottom, var(--accent), transparent);
+    display: block;
+  }
+
+  /* ─── STAT TICKER ─── */
+  .ticker {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    overflow: hidden;
+    padding: 12px 0;
+  }
+  .ticker-track {
+    display: flex; gap: 64px;
+    animation: ticker 20s linear infinite;
+    white-space: nowrap;
+  }
+  .ticker-item {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    flex-shrink: 0;
+  }
+  .ticker-item strong { color: var(--accent); }
+  @keyframes ticker {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  /* ─── SECTIONS ─── */
+  section { padding: 120px 48px; }
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem; color: var(--accent);
+    letter-spacing: 0.2em; text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-weight: 700; line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin-bottom: 20px;
+  }
+  .section-desc {
+    max-width: 560px;
+    font-size: 0.95rem; line-height: 1.75;
+    color: var(--muted);
+    margin-bottom: 64px;
+  }
+
+  /* ─── OVERVIEW ─── */
+  #overview { background: var(--surface); }
+  .overview-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    background: var(--border);
+  }
+  .overview-card {
+    background: var(--surface2);
+    padding: 48px;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.3s;
+  }
+  .overview-card:hover { background: #1a1d27; }
+  .overview-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0;
+    width: 3px; height: 0;
+    background: var(--accent);
+    transition: height 0.4s;
+  }
+  .overview-card:hover::before { height: 100%; }
+  .overview-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem; color: var(--accent);
+    letter-spacing: 0.15em; margin-bottom: 20px;
+  }
+  .overview-card h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.25rem; font-weight: 700;
+    margin-bottom: 12px;
+  }
+  .overview-card p {
+    font-size: 0.9rem; line-height: 1.7;
+    color: var(--muted);
+  }
+
+  /* ─── PROBLEM ─── */
+  #problem {}
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    background: var(--border);
+    margin-bottom: 64px;
+  }
+  .stat-block {
+    background: var(--surface2);
+    padding: 48px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .stat-block::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(circle at 30% 50%, rgba(0,229,180,0.04), transparent 60%);
+  }
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 4rem; font-weight: 800;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 12px;
+  }
+  .stat-label {
+    font-size: 0.9rem; color: var(--muted);
+    line-height: 1.5;
+  }
+  .stat-source {
+    margin-top: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem; color: rgba(107,114,128,0.6);
+    letter-spacing: 0.05em;
+  }
+
+  .problem-quote {
+    border-left: 3px solid var(--accent);
+    padding: 24px 36px;
+    background: var(--surface2);
+    font-size: 1.05rem;
+    line-height: 1.75;
+    color: var(--text);
+    font-style: italic;
+    max-width: 720px;
+  }
+
+  /* ─── SOLUTION ─── */
+  #solution { background: var(--surface); }
+  .solution-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: start;
+  }
+
+  .pipeline {
+    display: flex; flex-direction: column; gap: 0;
+  }
+  .pipeline-step {
+    display: flex; gap: 24px; align-items: flex-start;
+    position: relative;
+    padding-bottom: 40px;
+  }
+  .pipeline-step:last-child { padding-bottom: 0; }
+  .pipeline-step::before {
+    content: '';
+    position: absolute;
+    left: 19px; top: 40px;
+    width: 2px;
+    height: calc(100% - 40px);
+    background: linear-gradient(to bottom, var(--accent), transparent);
+  }
+  .pipeline-step:last-child::before { display: none; }
+  .step-dot {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: var(--surface2);
+    border: 2px solid var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem; color: var(--accent);
+    font-weight: 500;
+  }
+  .step-content h4 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1rem; font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .step-content p {
+    font-size: 0.85rem; line-height: 1.65;
+    color: var(--muted);
+  }
+
+  .score-box {
+    background: var(--surface2);
+    padding: 40px;
+    border: 1px solid var(--border);
+  }
+  .score-box-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem; color: var(--accent);
+    letter-spacing: 0.15em; text-transform: uppercase;
+    margin-bottom: 32px;
+  }
+  .score-equation {
+    display: flex; flex-direction: column; gap: 16px;
+    margin-bottom: 32px;
+  }
+  .score-component {
+    display: flex; gap: 16px; align-items: center;
+  }
+  .score-icon {
+    width: 40px; height: 40px;
+    background: rgba(0,229,180,0.08);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+  .score-component-text h5 {
+    font-size: 0.85rem; font-weight: 500;
+    margin-bottom: 2px;
+  }
+  .score-component-text p {
+    font-size: 0.78rem; color: var(--muted);
+  }
+  .score-plus {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.4rem; color: var(--accent);
+    text-align: center;
+    margin: -4px 0;
+  }
+  .score-result {
+    background: rgba(0,229,180,0.08);
+    border: 1px solid rgba(0,229,180,0.2);
+    padding: 20px 24px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .score-result-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 1rem; font-weight: 700;
+    color: var(--accent);
+  }
+  .score-result-val {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem; color: var(--muted);
+  }
+
+  /* ─── FEATURES ─── */
+  #features {}
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    background: var(--border);
+  }
+  .feature-card {
+    background: var(--surface2);
+    padding: 48px 40px;
+    transition: background 0.3s;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+  }
+  .feature-card:hover { background: #1e2130; }
+  .feature-card .feature-icon {
+    font-size: 2rem; margin-bottom: 24px;
+    display: block;
+  }
+  .feature-card h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.05rem; font-weight: 700;
+    margin-bottom: 12px;
+    line-height: 1.3;
+  }
+  .feature-card p {
+    font-size: 0.85rem; line-height: 1.7;
+    color: var(--muted);
+  }
+  .feature-tag {
+    display: inline-block;
+    margin-top: 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    background: rgba(0,229,180,0.1);
+    color: var(--accent);
+    padding: 4px 10px;
+    letter-spacing: 0.08em;
+  }
+
+  /* ─── RISK LEVEL ─── */
+  #risk { background: var(--surface); }
+  .risk-tiers {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    background: var(--border);
+    margin-bottom: 48px;
+  }
+  .risk-tier {
+    padding: 48px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .risk-tier.safe { background: rgba(16,185,129,0.08); border-top: 3px solid var(--safe); }
+  .risk-tier.warn { background: rgba(249,115,22,0.08); border-top: 3px solid var(--warn); }
+  .risk-tier.danger { background: rgba(255,77,109,0.08); border-top: 3px solid var(--accent2); }
+  .risk-level-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem; letter-spacing: 0.1em;
+    padding: 5px 12px; margin-bottom: 20px;
+    font-weight: 500;
+  }
+  .risk-level-badge.safe { background: rgba(16,185,129,0.15); color: var(--safe); }
+  .risk-level-badge.warn { background: rgba(249,115,22,0.15); color: var(--warn); }
+  .risk-level-badge.danger { background: rgba(255,77,109,0.15); color: var(--accent2); }
+  .risk-tier h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.1rem; font-weight: 700;
+    margin-bottom: 12px;
+  }
+  .risk-tier p { font-size: 0.88rem; line-height: 1.65; color: var(--muted); }
+
+  /* ─── TECH STACK ─── */
+  #tech {}
+  .tech-groups {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2px;
+    background: var(--border);
+  }
+  .tech-group {
+    background: var(--surface2);
+    padding: 40px 44px;
+  }
+  .tech-group-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem; color: var(--accent);
+    letter-spacing: 0.15em; text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  .tech-pills {
+    display: flex; flex-wrap: wrap; gap: 8px;
+  }
+  .tech-pill {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 6px 14px;
+    letter-spacing: 0.05em;
+    transition: background 0.2s, border-color 0.2s, color 0.2s;
+  }
+  .tech-pill:hover {
+    background: rgba(0,229,180,0.08);
+    border-color: rgba(0,229,180,0.3);
+    color: var(--accent);
+  }
+
+  /* ─── TEAM ─── */
+  #team { background: var(--surface); }
+  .team-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    background: var(--border);
+  }
+  .team-card {
+    background: var(--surface2);
+    padding: 48px 40px;
+    transition: background 0.3s;
+  }
+  .team-card:hover { background: #1a1d27; }
+  .team-avatar {
+    width: 60px; height: 60px;
+    background: rgba(0,229,180,0.1);
+    border: 1.5px solid rgba(0,229,180,0.3);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-size: 1.2rem; font-weight: 800; color: var(--accent);
+    margin-bottom: 20px;
+  }
+  .team-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.1rem; font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .team-role-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem; color: var(--accent);
+    letter-spacing: 0.1em; text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .team-skills {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    margin-top: 12px;
+  }
+  .team-skill {
+    font-size: 0.75rem; color: var(--muted);
+    background: rgba(255,255,255,0.04);
+    padding: 3px 10px;
+    border: 1px solid var(--border);
+  }
+
+  /* ─── RESULTS ─── */
+  #results {}
+  .results-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2px;
+    background: var(--border);
+    margin-bottom: 64px;
+  }
+  .result-card {
+    background: var(--surface2);
+    padding: 40px;
+    text-align: center;
+  }
+  .result-val {
+    font-family: 'Syne', sans-serif;
+    font-size: 2.5rem; font-weight: 800;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .result-label {
+    font-size: 0.82rem; color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* ─── FOOTER ─── */
+  footer {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    padding: 60px 48px;
+    display: flex; justify-content: space-between; align-items: flex-end;
+  }
+  .footer-project {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.8rem; font-weight: 800;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    margin-bottom: 8px;
+  }
+  .footer-sub { font-size: 0.85rem; color: var(--muted); }
+  .footer-links { display: flex; gap: 24px; }
+  .footer-links a {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem; color: var(--muted);
+    text-decoration: none; letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .footer-links a:hover { color: var(--accent); }
+
+  /* ─── SWOT ─── */
+  #swot {}
+  .swot-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 2px;
+    background: var(--border);
+  }
+  .swot-card {
+    background: var(--surface2);
+    padding: 48px 44px;
+  }
+  .swot-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.75rem; font-weight: 800;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .swot-card:nth-child(1) .swot-label { color: var(--safe); }
+  .swot-card:nth-child(2) .swot-label { color: var(--accent2); }
+  .swot-card:nth-child(3) .swot-label { color: var(--accent); }
+  .swot-card:nth-child(4) .swot-label { color: var(--warn); }
+  .swot-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.1rem; font-weight: 700;
+    margin-bottom: 20px;
+    color: var(--text);
+  }
+  .swot-items { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .swot-items li {
+    font-size: 0.88rem; line-height: 1.6; color: var(--muted);
+    padding-left: 16px; position: relative;
+  }
+  .swot-items li::before {
+    content: '→';
+    position: absolute; left: 0;
+    color: var(--accent); font-size: 0.75rem;
+  }
+
+  /* ─── ANIMATIONS ─── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .reveal {
+    opacity: 0; transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible {
+    opacity: 1; transform: translateY(0);
+  }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 900px) {
+    nav { padding: 16px 24px; }
+    .nav-links { display: none; }
+    .hero { padding: 0 24px 60px; }
+    section { padding: 80px 24px; }
+    .overview-grid, .stats-row, .features-grid, .team-grid,
+    .results-grid, .swot-grid, .tech-groups, .risk-tiers { grid-template-columns: 1fr; }
+    .solution-split { grid-template-columns: 1fr; gap: 48px; }
+    footer { padding: 40px 24px; flex-direction: column; gap: 32px; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">SIGNAL</div>
+  <ul class="nav-links">
+    <li><a href="#overview">개요</a></li>
+    <li><a href="#problem">문제</a></li>
+    <li><a href="#solution">솔루션</a></li>
+    <li><a href="#features">기능</a></li>
+    <li><a href="#tech">기술스택</a></li>
+    <li><a href="#team">팀</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg-grid"></div>
+  <div class="hero-scan"></div>
+
+  <div class="hero-tag">// Portfolio Project 2026</div>
+  <h1 class="hero-title">
+    <span class="dim-word">AI</span><br>
+    <span class="accent-word">SIGNAL</span>
+  </h1>
+  <p class="hero-sub">
+    산업별 핵심 지표 기반의 AI 무역 리스크 조기경보 플랫폼.<br>
+    흩어진 글로벌 뉴스와 시장 지표를 BERT로 분석해<br>
+    중소 무역기업에 맞춤형 위기 신호를 실시간 전송합니다.
+  </p>
+  <div class="hero-meta">
+    <div class="hero-meta-item">기간 <span>7 weeks</span></div>
+    <div class="hero-meta-item">팀 <span>3명</span></div>
+    <div class="hero-meta-item">역할 <span>프론트 · UI · 기획 · 서버 · DB</span></div>
+  </div>
+  <a href="#overview" class="hero-cta">
+    프로젝트 살펴보기 →
+  </a>
+
+  <div class="hero-scroll-hint">scroll</div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-track" id="tickerTrack">
+    <span class="ticker-item">BERT 뉴스 감성 분석 &nbsp;·&nbsp; <strong>실시간 환율 파이프라인</strong> &nbsp;·&nbsp; 글로벌 리스크 히트맵 &nbsp;·&nbsp; <strong>3단계 위험도 분류</strong> &nbsp;·&nbsp; Elasticsearch 검색 &nbsp;·&nbsp; <strong>이메일 Push 알림</strong> &nbsp;·&nbsp; 개인화 뉴스 피드 &nbsp;·&nbsp; <strong>Z-Score 이상탐지</strong> &nbsp;·&nbsp; 11개 글로벌 매체 수집 &nbsp;·&nbsp; <strong>원자재 리스크 스코어링</strong> &nbsp;·&nbsp;</span>
+    <span class="ticker-item">BERT 뉴스 감성 분석 &nbsp;·&nbsp; <strong>실시간 환율 파이프라인</strong> &nbsp;·&nbsp; 글로벌 리스크 히트맵 &nbsp;·&nbsp; <strong>3단계 위험도 분류</strong> &nbsp;·&nbsp; Elasticsearch 검색 &nbsp;·&nbsp; <strong>이메일 Push 알림</strong> &nbsp;·&nbsp; 개인화 뉴스 피드 &nbsp;·&nbsp; <strong>Z-Score 이상탐지</strong> &nbsp;·&nbsp; 11개 글로벌 매체 수집 &nbsp;·&nbsp; <strong>원자재 리스크 스코어링</strong> &nbsp;·&nbsp;</span>
+  </div>
+</div>
+
+<!-- OVERVIEW -->
+<section id="overview">
+  <div class="section-label">// 01 — Project Overview</div>
+  <h2 class="section-title reveal">프로젝트 한눈에 보기</h2>
+  <p class="section-desc reveal">뉴스와 시장 데이터를 AI로 통합 분석해, 중소 무역기업이 위기를 직관적으로 파악하고 선제 대응하도록 돕는 플랫폼입니다.</p>
+
+  <div class="overview-grid reveal">
+    <div class="overview-card">
+      <div class="overview-num">01 — PROBLEM</div>
+      <h3>무방비 중소 무역기업</h3>
+      <p>수출입 중소기업의 88%는 별도의 환리스크 관리를 하지 않으며, 공급망 위기 발생 시 즉각 대응 가능한 기업은 단 33.5%에 불과합니다.</p>
+    </div>
+    <div class="overview-card">
+      <div class="overview-num">02 — SOLUTION</div>
+      <h3>AI 기반 실시간 조기경보</h3>
+      <p>BERT 임베딩, 실시간 환율·원자재 파이프라인, Z-Score 이상탐지를 결합해 위험 신호를 3단계로 등급화하고 즉시 알림을 전송합니다.</p>
+    </div>
+    <div class="overview-card">
+      <div class="overview-num">03 — IMPACT</div>
+      <h3>데이터 기반 의사결정 지원</h3>
+      <p>글로벌 리스크 히트맵으로 3초 안에 위험국 파악, 개인화 키워드 기반 뉴스 피드로 기업 비즈니스에 직결된 정보만 제공합니다.</p>
+    </div>
+    <div class="overview-card">
+      <div class="overview-num">04 — SCALE</div>
+      <h3>구독형 수익 모델</h3>
+      <p>비로그인·일반·프리미엄 3티어 구조로 설계. 프리미엄에서 무제한 키워드 설정, 위기 이메일 알림, 맞춤 대응 전략 제안 제공.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PROBLEM -->
+<section id="problem">
+  <div class="section-label">// 02 — Problem Statement</div>
+  <h2 class="section-title reveal">왜 만들었나</h2>
+  <p class="section-desc reveal">KOTRA가 뉴스 기반 AI 조기경보를 최우선 과제로 선정한 배경, 그 숫자가 모든 걸 말합니다.</p>
+
+  <div class="stats-row reveal">
+    <div class="stat-block">
+      <div class="stat-num">41.8%</div>
+      <div class="stat-label">수출입 중소기업이 환율 변동으로<br>직접적 피해를 경험</div>
+      <div class="stat-source">출처: 중소기업중앙회 환변동 실태조사 2025</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-num">88%</div>
+      <div class="stat-label">별도의 환리스크 관리 수단을<br>활용하지 않는 중소기업 비율</div>
+      <div class="stat-source">출처: 중소기업중앙회 환변동 실태조사 2025</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-num">33.5%</div>
+      <div class="stat-label">공급망 위기 발생 시 즉각<br>대응 가능한 수출기업 비율</div>
+      <div class="stat-source">출처: 한국무역협회 공급망 위기인식 조사</div>
+    </div>
+  </div>
+
+  <blockquote class="problem-quote reveal">
+    "흩어진 시장 신호를 실시간으로 포착하여,<br>
+    생존을 위한 각 기업별 맞춤형 조기 경보를 제공한다."
+  </blockquote>
+</section>
+
+<!-- SOLUTION -->
+<section id="solution">
+  <div class="section-label">// 03 — Solution Architecture</div>
+  <h2 class="section-title reveal">어떻게 작동하나</h2>
+  <p class="section-desc reveal">4단계 자동화 파이프라인과 통합 리스크 스코어링으로 위험 신호를 정량화합니다.</p>
+
+  <div class="solution-split reveal">
+    <div class="pipeline">
+      <div class="pipeline-step">
+        <div class="step-dot">01</div>
+        <div class="step-content">
+          <h4>데이터 수집</h4>
+          <p>11개 글로벌 매체 뉴스와 7개 환율·원자재 지표를 1시간 단위로 자동 수집합니다.</p>
+        </div>
+      </div>
+      <div class="pipeline-step">
+        <div class="step-dot">02</div>
+        <div class="step-content">
+          <h4>AI 특징 추출</h4>
+          <p>BERT + Nori 기반 키워드 추출 엔진으로 핵심 위험 시그널을 정밀 파악합니다.</p>
+        </div>
+      </div>
+      <div class="pipeline-step">
+        <div class="step-dot">03</div>
+        <div class="step-content">
+          <h4>위험도 등급화</h4>
+          <p>Z-Score 기반 이상탐지와 상관 알고리즘으로 리스크를 주의·경고·심각 3단계 분류합니다.</p>
+        </div>
+      </div>
+      <div class="pipeline-step">
+        <div class="step-dot">04</div>
+        <div class="step-content">
+          <h4>스마트 딜리버리</h4>
+          <p>사용자 맞춤 분석 결과를 실시간 이메일 Push 및 대시보드 리포트로 전송합니다.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="score-box">
+      <div class="score-box-title">Signal Score 산출 방법론</div>
+      <div class="score-equation">
+        <div class="score-component">
+          <div class="score-icon">📰</div>
+          <div class="score-component-text">
+            <h5>BERT 뉴스 감성 점수</h5>
+            <p>AI 모델 기반 기사 분석 및 위험 수위 판정</p>
+          </div>
+        </div>
+        <div class="score-plus">+</div>
+        <div class="score-component">
+          <div class="score-icon">💱</div>
+          <div class="score-component-text">
+            <h5>환율 변동 점수</h5>
+            <p>실시간 환율 지표의 임계치 이탈 정도 측정</p>
+          </div>
+        </div>
+        <div class="score-plus">+</div>
+        <div class="score-component">
+          <div class="score-icon">🏭</div>
+          <div class="score-component-text">
+            <h5>원자재 리스크 점수</h5>
+            <p>산업별 필수 원자재 가격 스코어링 합산</p>
+          </div>
+        </div>
+      </div>
+      <div class="score-result">
+        <div class="score-result-label">= SIGNAL SCORE</div>
+        <div class="score-result-val">통합 가중치 산출</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="section-label">// 04 — Key Features</div>
+  <h2 class="section-title reveal">핵심 기능</h2>
+  <p class="section-desc reveal">비로그인 사용자도 히트맵을 통해 글로벌 상황을 파악하고, 로그인 시 맞춤형 알림과 분석 리포트를 받을 수 있습니다.</p>
+
+  <div class="features-grid reveal">
+    <div class="feature-card">
+      <span class="feature-icon">🗺️</span>
+      <h3>글로벌 리스크 히트맵</h3>
+      <p>전 세계 국가를 위험 단계별 색상으로 시각화. 국가 클릭 시 해당 국가의 실시간 Signal 점수와 핵심 뉴스 즉시 노출.</p>
+      <span class="feature-tag">실시간</span>
+    </div>
+    <div class="feature-card">
+      <span class="feature-icon">📡</span>
+      <h3>Signal Station</h3>
+      <p>리스크 변동 지표를 실시간 추적해 주의가 필요한 상위 3개국을 자동 추출. 환율·원자재·뉴스 통합 알고리즘 기반.</p>
+      <span class="feature-tag">자동화</span>
+    </div>
+    <div class="feature-card">
+      <span class="feature-icon">🔔</span>
+      <h3>실시간 위기 알림</h3>
+      <p>심각 단계 감지 시 이메일 Push로 즉시 전송. 단계별 대응 가이드와 데이터 기반 헤징 시나리오 제안 포함.</p>
+      <span class="feature-tag">Push 알림</span>
+    </div>
+    <div class="feature-card">
+      <span class="feature-icon">⚙️</span>
+      <h3>개인화 뉴스 피드</h3>
+      <p>회원 가입 시 설정한 산업·관심 키워드 기반으로 비즈니스에 직결된 뉴스만 필터링해 제공.</p>
+      <span class="feature-tag">맞춤형</span>
+    </div>
+    <div class="feature-card">
+      <span class="feature-icon">📋</span>
+      <h3>시그널 로그</h3>
+      <p>발송된 시그널의 상세 내용과 근거 데이터를 히스토리로 관리. 경영진의 신속한 의사결정 지원.</p>
+      <span class="feature-tag">히스토리</span>
+    </div>
+    <div class="feature-card">
+      <span class="feature-icon">💰</span>
+      <h3>3티어 구독 모델</h3>
+      <p>Guest · Member · Premium 단계별 서비스 차등 제공. 프리미엄에서 무제한 키워드, 맞춤 전략 제안.</p>
+      <span class="feature-tag">수익 모델</span>
+    </div>
+  </div>
+</section>
+
+<!-- RISK LEVEL -->
+<section id="risk">
+  <div class="section-label">// 05 — Risk Classification</div>
+  <h2 class="section-title reveal">3단계 위험도 분류</h2>
+  <p class="section-desc reveal">감정적 판단을 배제하고 데이터 기반 임계치로 리스크를 객관적으로 등급화합니다.</p>
+
+  <div class="risk-tiers reveal">
+    <div class="risk-tier safe">
+      <div class="risk-level-badge safe">● 1단계 — 주의</div>
+      <h3>모니터링 구간</h3>
+      <p>Signal Score가 정상 범위를 소폭 이탈한 상태. 관련 뉴스 피드 및 지표 변동을 대시보드에 노출하여 능동적 모니터링을 지원합니다.</p>
+    </div>
+    <div class="risk-tier warn">
+      <div class="risk-level-badge warn">● 2단계 — 경고</div>
+      <h3>대응 준비 구간</h3>
+      <p>복수 지표에서 임계치 이탈 감지. 이메일 알림 발송 및 관련 국가·산업의 심층 리포트를 자동 생성하여 대응 시나리오를 제시합니다.</p>
+    </div>
+    <div class="risk-tier danger">
+      <div class="risk-level-badge danger">● 3단계 — 심각</div>
+      <h3>즉각 대응 구간</h3>
+      <p>공급망 단절·환율 급변 등 복합 위기 감지. 실시간 Push 알림과 함께 헤징 시나리오 및 대응 가이드를 즉시 전달합니다.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SWOT -->
+<section id="swot" style="background: var(--surface);">
+  <div class="section-label">// 06 — SWOT Analysis</div>
+  <h2 class="section-title reveal">SWOT 분석</h2>
+  <p class="section-desc reveal">프로젝트의 강·약점과 시장 기회·위협을 분석했습니다.</p>
+
+  <div class="swot-grid reveal">
+    <div class="swot-card">
+      <div class="swot-label">Strengths</div>
+      <div class="swot-title">강점</div>
+      <ul class="swot-items">
+        <li>BERT 기반 고성능 자연어 처리 엔진</li>
+        <li>환율·원자재 실시간 자동 파이프라인</li>
+        <li>Z-Score 이상탐지로 객관적 임계치 산출</li>
+        <li>중소기업 특화 초개인화 서비스</li>
+      </ul>
+    </div>
+    <div class="swot-card">
+      <div class="swot-label">Weaknesses</div>
+      <div class="swot-title">약점</div>
+      <ul class="swot-items">
+        <li>글로벌 전 국가 데이터 커버리지 확장 필요</li>
+        <li>유료 모델 초기 레퍼런스 확보 단계</li>
+        <li>모델 학습 데이터 라벨링 공수 필요</li>
+      </ul>
+    </div>
+    <div class="swot-card">
+      <div class="swot-label">Opportunities</div>
+      <div class="swot-title">기회</div>
+      <ul class="swot-items">
+        <li>공급망 불확실성 상시화로 수요 급증</li>
+        <li>SME 대상 디지털 전환 지원 정책 활성화</li>
+        <li>KOTRA 등 공공기관 수출 리스크 지원 수요</li>
+      </ul>
+    </div>
+    <div class="swot-card">
+      <div class="swot-label">Threats</div>
+      <div class="swot-title">위협</div>
+      <ul class="swot-items">
+        <li>기존 대형 금융 데이터 벤더의 서비스 확장</li>
+        <li>빅테크 기업의 AI 기반 시장 진입 가속화</li>
+        <li>뉴스 API 비용 및 데이터 품질 의존성</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- TECH STACK -->
+<section id="tech">
+  <div class="section-label">// 07 — Tech Stack</div>
+  <h2 class="section-title reveal">기술 스택</h2>
+  <p class="section-desc reveal">빅데이터 수집부터 AI 분석, 실시간 웹 서비스까지 엔드투엔드로 구현했습니다.</p>
+
+  <div class="tech-groups reveal">
+    <div class="tech-group">
+      <div class="tech-group-label">Backend & Framework</div>
+      <div class="tech-pills">
+        <span class="tech-pill">Python</span>
+        <span class="tech-pill">FastAPI</span>
+        <span class="tech-pill">Spring Boot</span>
+        <span class="tech-pill">Java</span>
+      </div>
+    </div>
+    <div class="tech-group">
+      <div class="tech-group-label">AI / ML</div>
+      <div class="tech-pills">
+        <span class="tech-pill">BERT</span>
+        <span class="tech-pill">Transformers</span>
+        <span class="tech-pill">Nori (형태소 분석)</span>
+        <span class="tech-pill">Z-Score</span>
+        <span class="tech-pill">Scikit-learn</span>
+      </div>
+    </div>
+    <div class="tech-group">
+      <div class="tech-group-label">Data & Search</div>
+      <div class="tech-pills">
+        <span class="tech-pill">Elasticsearch</span>
+        <span class="tech-pill">MySQL</span>
+        <span class="tech-pill">Pandas</span>
+        <span class="tech-pill">APScheduler</span>
+      </div>
+    </div>
+    <div class="tech-group">
+      <div class="tech-group-label">Frontend & Tools</div>
+      <div class="tech-pills">
+        <span class="tech-pill">React</span>
+        <span class="tech-pill">JavaScript</span>
+        <span class="tech-pill">Figma</span>
+        <span class="tech-pill">Git</span>
+        <span class="tech-pill">GitHub Actions</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RESULTS -->
+<section id="results" style="background: var(--surface);">
+  <div class="section-label">// 08 — Key Achievements</div>
+  <h2 class="section-title reveal">프로젝트 성과</h2>
+  <p class="section-desc reveal">7주간의 개발 스프린트를 통해 달성한 결과입니다.</p>
+
+  <div class="results-grid reveal">
+    <div class="result-card">
+      <div class="result-val">11개</div>
+      <div class="result-label">수집 대상<br>글로벌 뉴스 매체</div>
+    </div>
+    <div class="result-card">
+      <div class="result-val">7개</div>
+      <div class="result-label">실시간 추적<br>환율·원자재 지표</div>
+    </div>
+    <div class="result-card">
+      <div class="result-val">3단계</div>
+      <div class="result-label">데이터 기반<br>위험도 분류 체계</div>
+    </div>
+    <div class="result-card">
+      <div class="result-val">7주</div>
+      <div class="result-label">기획부터<br>배포까지</div>
+    </div>
+  </div>
+</section>
+
+<!-- TEAM -->
+<section id="team">
+  <div class="section-label">// 09 — Team</div>
+  <h2 class="section-title reveal">팀 소개</h2>
+
+  <div class="team-grid reveal">
+    <div class="team-card">
+      <div class="team-avatar">정</div>
+      <div class="team-name">정원필</div>
+      <div class="team-role-tag">팀장 · PM</div>
+      <p style="font-size:0.85rem;color:var(--muted);line-height:1.6;">프로젝트 전반을 총괄하며 프론트엔드, UI 설계, 서버, DB 아키텍처까지 담당.</p>
+      <div class="team-skills">
+        <span class="team-skill">Frontend</span>
+        <span class="team-skill">UI/UX</span>
+        <span class="team-skill">기획</span>
+        <span class="team-skill">서버</span>
+        <span class="team-skill">DB</span>
+      </div>
+    </div>
+    <div class="team-card">
+      <div class="team-avatar">유</div>
+      <div class="team-name">유진산</div>
+      <div class="team-role-tag">데이터 · ML</div>
+      <p style="font-size:0.85rem;color:var(--muted);line-height:1.6;">글로벌 뉴스 크롤링 파이프라인 구축과 BERT 기반 머신러닝 모델 개발 담당.</p>
+      <div class="team-skills">
+        <span class="team-skill">크롤링</span>
+        <span class="team-skill">ML</span>
+        <span class="team-skill">기획</span>
+        <span class="team-skill">BERT</span>
+      </div>
+    </div>
+    <div class="team-card">
+      <div class="team-avatar">민</div>
+      <div class="team-name">민선우</div>
+      <div class="team-role-tag">ML · Frontend</div>
+      <p style="font-size:0.85rem;color:var(--muted);line-height:1.6;">머신러닝 모델 고도화와 프론트엔드 UI 개발을 함께 담당.</p>
+      <div class="team-skills">
+        <span class="team-skill">ML</span>
+        <span class="team-skill">Frontend</span>
+        <span class="team-skill">React</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div>
+    <div class="footer-project">SIGNAL</div>
+    <div class="footer-sub">AI 무역 리스크 조기경보 플랫폼 · 2026</div>
+  </div>
+  <div class="footer-links">
+    <a href="#">GitHub →</a>
+    <a href="#">Demo →</a>
+    <a href="#">Contact →</a>
+  </div>
+</footer>
+
+<script>
+  // Custom cursor
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+  (function animCursor() {
+    cursor.style.left = mx + 'px'; cursor.style.top = my + 'px';
+    rx += (mx - rx) * 0.12; ry += (my - ry) *.12;
+    ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+    requestAnimationFrame(animCursor);
+  })();
+  document.querySelectorAll('a, button, .feature-card, .overview-card').forEach(el => {
+    el.addEventListener('mouseenter', () => { cursor.style.transform = 'translate(-50%,-50%) scale(2)'; ring.style.opacity = '0.2'; });
+    el.addEventListener('mouseleave', () => { cursor.style.transform = 'translate(-50%,-50%) scale(1)'; ring.style.opacity = '0.6'; });
+  });
+
+  // Scroll reveal
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), i * 80);
+      }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // Nav active highlight
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-links a');
+  window.addEventListener('scroll', () => {
+    let cur = '';
+    sections.forEach(s => { if (window.scrollY >= s.offsetTop - 120) cur = s.id; });
+    navLinks.forEach(a => {
+      a.style.color = a.getAttribute('href') === '#' + cur ? 'var(--accent)' : '';
+    });
+  });
+</script>
+</body>
+</html>
