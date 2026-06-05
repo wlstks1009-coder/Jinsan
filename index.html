@@ -6,54 +6,95 @@
 <title>유진산 | Software Developer</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Noto+Sans+KR:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
 :root {
-  --bg: #0a0b0f;
-  --surface: #111318;
-  --surface2: #181b22;
-  --border: rgba(255,255,255,0.07);
-  --text: #dde1ea;
-  --muted: #5a6070;
-  --accent: #4fffb0;
+  /* 기본 상태: 다크 모드 */
+  --bg-primary: #0a0b0f;       
+  --bg-secondary: #111318;     
+  --bg-surface3: #181b22;
+  --border-color: rgba(255,255,255,0.07);  
+  --text-primary: #dde1ea;     
+  --text-secondary: #b2b9c7;   
+  
+  --color-danger: #ff6b6b;     
+  --color-warning: #fbbf24;    
+  --color-stable: #4fffb0;     
+  --accent: #4fffb0;           
   --accent-dim: rgba(79,255,176,0.12);
+  --nav-bg: rgba(10,11,15,0.88);
 }
+
+[data-theme="light"] {
+  /* 라이트 모드 상태 */
+  --bg-primary: #f8f9fa;       
+  --bg-secondary: #ffffff;     
+  --bg-surface3: #e9ecef;      
+  --border-color: #ced4da;     
+  --text-primary: #212529;     
+  --text-secondary: #343a40;   
+  
+  --color-danger: #d93025;     
+  --color-warning: #e67e22;    
+  --color-stable: #1e7e34;     
+  --accent: #1a73e8;           
+  --accent-dim: rgba(26,115,232,0.1);
+  --nav-bg: rgba(248,249,250,0.88);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 html { scroll-behavior: smooth; }
 body {
-  background: var(--bg);
-  color: var(--text);
+  background: var(--bg-primary);
+  color: var(--text-primary);
   font-family: 'Noto Sans KR', sans-serif;
-  font-weight: 300;
+  font-weight: 400; 
   overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 ::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: var(--bg); }
-::-webkit-scrollbar-thumb { background: var(--muted); border-radius: 2px; }
+::-webkit-scrollbar-track { background: var(--bg-primary); }
+::-webkit-scrollbar-thumb { background: var(--text-secondary); border-radius: 2px; }
 
 /* NAV */
 nav {
   position: fixed; top: 0; left: 0; right: 0; z-index: 100;
   display: flex; justify-content: space-between; align-items: center;
   padding: 20px 56px;
-  background: rgba(10,11,15,0.88);
+  background: var(--nav-bg);
   backdrop-filter: blur(14px);
   border-bottom: 1px solid transparent;
-  transition: border-color 0.3s;
+  transition: border-color 0.3s, background-color 0.3s;
 }
-nav.scrolled { border-bottom-color: var(--border); }
+nav.scrolled { border-bottom-color: var(--border-color); }
 .nav-logo { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 800; letter-spacing: 0.15em; color: var(--accent); }
-.nav-links { display: flex; gap: 36px; list-style: none; }
+.nav-links { display: flex; gap: 36px; list-style: none; align-items: center; }
 .nav-links a {
-  font-family: 'JetBrains Mono', monospace; font-size: 0.7rem;
-  letter-spacing: 0.1em; color: var(--muted); text-decoration: none;
+  font-family: 'JetBrains Mono', monospace; font-size: 0.75rem;
+  letter-spacing: 0.1em; color: var(--text-secondary); text-decoration: none;
   text-transform: uppercase; transition: color 0.2s;
 }
 .nav-links a:hover, .nav-links a.active { color: var(--accent); }
+
+.nav-right-area { display: flex; align-items: center; gap: 16px; }
+
+#theme-toggle {
+  background: var(--bg-surface3);
+  border: 1px solid var(--border-color);
+  padding: 8px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+#theme-toggle:hover { border-color: var(--accent); }
+
 .nav-contact {
-  font-family: 'JetBrains Mono', monospace; font-size: 0.7rem;
-  letter-spacing: 0.1em; color: var(--bg); background: var(--accent);
+  font-family: 'JetBrains Mono', monospace; font-size: 0.75rem;
+  letter-spacing: 0.1em; color: var(--bg-primary); background: var(--accent);
   padding: 8px 18px; text-decoration: none; font-weight: 500; transition: opacity 0.2s;
 }
 .nav-contact:hover { opacity: 0.85; }
@@ -69,8 +110,8 @@ nav.scrolled { border-bottom-color: var(--border); }
 .hero-grid-bg {
   position: absolute; inset: 0;
   background-image:
-    linear-gradient(rgba(79,255,176,0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(79,255,176,0.03) 1px, transparent 1px);
+    linear-gradient(var(--accent-dim) 1px, transparent 1px),
+    linear-gradient(90deg, var(--accent-dim) 1px, transparent 1px);
   background-size: 72px 72px;
   mask-image: radial-gradient(ellipse 70% 80% at 60% 40%, black, transparent);
   pointer-events: none;
@@ -78,7 +119,7 @@ nav.scrolled { border-bottom-color: var(--border); }
 .hero-left { position: relative; }
 .hero-tag {
   display: inline-flex; align-items: center; gap: 10px;
-  font-family: 'JetBrains Mono', monospace; font-size: 0.7rem;
+  font-family: 'JetBrains Mono', monospace; font-size: 0.75rem;
   color: var(--accent); letter-spacing: 0.15em; text-transform: uppercase;
   margin-bottom: 28px;
   opacity: 0; animation: fadeUp 0.7s 0.1s forwards;
@@ -92,300 +133,198 @@ nav.scrolled { border-bottom-color: var(--border); }
   opacity: 0; animation: fadeUp 0.7s 0.2s forwards;
 }
 .hero-role {
-  font-size: 1.1rem; color: var(--muted); line-height: 1.7;
+  font-size: 1.15rem; color: var(--text-secondary); line-height: 1.7;
   margin-bottom: 40px;
   opacity: 0; animation: fadeUp 0.7s 0.3s forwards;
 }
-.hero-role strong { color: var(--text); font-weight: 500; }
-.hero-btns {
-  display: flex; gap: 16px; align-items: center;
-  opacity: 0; animation: fadeUp 0.7s 0.4s forwards;
-}
+.hero-role strong { color: var(--text-primary); font-weight: 500; }
+.hero-btns { display: flex; gap: 16px; align-items: center; opacity: 0; animation: fadeUp 0.7s 0.4s forwards; }
 .btn-primary {
-  font-family: 'JetBrains Mono', monospace; font-size: 0.75rem;
+  font-family: 'JetBrains Mono', monospace; font-size: 0.8rem;
   letter-spacing: 0.1em; text-transform: uppercase;
-  color: var(--bg); background: var(--accent); padding: 13px 28px;
+  color: var(--bg-primary); background: var(--accent); padding: 13px 28px;
   text-decoration: none; font-weight: 500;
   transition: transform 0.2s, box-shadow 0.2s; display: inline-block;
 }
-.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(79,255,176,0.2); }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 28px var(--accent-dim); }
 .btn-secondary {
-  font-family: 'JetBrains Mono', monospace; font-size: 0.75rem;
+  font-family: 'JetBrains Mono', monospace; font-size: 0.8rem;
   letter-spacing: 0.1em; text-transform: uppercase;
-  color: var(--muted); background: transparent;
-  border: 1px solid var(--border); padding: 12px 28px;
+  color: var(--text-secondary); background: transparent;
+  border: 1px solid var(--border-color); padding: 12px 28px;
   text-decoration: none; transition: color 0.2s, border-color 0.2s; display: inline-block;
 }
-.btn-secondary:hover { color: var(--accent); border-color: rgba(79,255,176,0.3); }
+.btn-secondary:hover { color: var(--accent); border-color: var(--accent); }
 
 .hero-right { position: relative; opacity: 0; animation: fadeIn 1s 0.5s forwards; }
 .terminal-card {
-  background: var(--surface); border: 1px solid var(--border);
+  background: var(--bg-secondary); border: 1px solid var(--border-color);
   font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; overflow: hidden;
+  transition: background-color 0.3s, border-color 0.3s;
 }
 .terminal-bar {
-  background: var(--surface2); padding: 10px 16px;
+  background: var(--bg-surface3); padding: 10px 16px;
   display: flex; gap: 7px; align-items: center;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--border-color);
 }
 .terminal-dot { width: 10px; height: 10px; border-radius: 50%; }
 .terminal-body { padding: 28px; line-height: 2.0; }
-.t-muted { color: var(--muted); }
+.t-muted { color: #7a8296; }
+[data-theme="light"] .t-muted { color: #6c757d; }
 .t-accent { color: var(--accent); }
 .t-string { color: #f0a87a; }
+[data-theme="light"] .t-string { color: #b56e36; } 
 .t-key { color: #8ab4f8; }
+[data-theme="light"] .t-key { color: #1a64db; }
 
 .hero-scroll {
   position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
   display: flex; flex-direction: column; align-items: center; gap: 8px;
-  font-family: 'JetBrains Mono', monospace; font-size: 0.62rem;
-  color: var(--muted); letter-spacing: 0.15em; text-transform: uppercase;
+  font-family: 'JetBrains Mono', monospace; font-size: 0.65rem;
+  color: var(--text-secondary); letter-spacing: 0.15em; text-transform: uppercase;
   opacity: 0; animation: fadeIn 1s 1.2s forwards; text-decoration: none;
 }
-.hero-scroll::after {
-  content: ''; width: 1px; height: 40px;
-  background: linear-gradient(to bottom, var(--muted), transparent);
-}
+.hero-scroll::after { content: ''; width: 1px; height: 40px; background: linear-gradient(to bottom, var(--text-secondary), transparent); }
 
 /* SECTIONS */
 section { padding: 110px 56px; }
-.sec-label {
-  font-family: 'JetBrains Mono', monospace; font-size: 0.68rem;
-  color: var(--accent); letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 14px;
-}
-.sec-title {
-  font-family: 'Syne', sans-serif;
-  font-size: clamp(1.8rem, 3.5vw, 2.8rem);
-  font-weight: 700; letter-spacing: -0.02em; line-height: 1.2; margin-bottom: 16px;
-}
-.sec-desc { font-size: 0.95rem; line-height: 1.8; color: var(--muted); max-width: 520px; margin-bottom: 60px; }
+.sec-label { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--accent); letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 14px; }
+.sec-title { font-family: 'Syne', sans-serif; font-size: clamp(1.8rem, 3.5vw, 2.8rem); font-weight: 700; letter-spacing: -0.02em; line-height: 1.2; margin-bottom: 16px; }
+.sec-desc { font-size: 1rem; line-height: 1.8; color: var(--text-secondary); max-width: 520px; margin-bottom: 60px; }
 
 /* ABOUT */
-#about { background: var(--surface); }
+#about { background: var(--bg-secondary); }
 .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start; }
-.about-text p { font-size: 0.95rem; line-height: 1.9; color: var(--muted); margin-bottom: 22px; }
+.about-text p { font-size: 1rem; line-height: 1.9; color: var(--text-secondary); margin-bottom: 22px; }
 .about-text p:last-child { margin-bottom: 0; }
-.about-text p strong { color: var(--text); font-weight: 500; }
+.about-text p strong { color: var(--text-primary); font-weight: 500; }
 .about-values { display: flex; flex-direction: column; }
-.value-item {
-  display: flex; gap: 24px; align-items: flex-start;
-  padding: 24px 0; border-bottom: 1px solid var(--border);
-}
-.value-item:first-child { border-top: 1px solid var(--border); }
-.value-num { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: var(--accent); letter-spacing: 0.1em; margin-top: 3px; flex-shrink: 0; }
-.value-item h4 { font-size: 0.9rem; font-weight: 500; margin-bottom: 6px; }
-.value-item p { font-size: 0.83rem; line-height: 1.65; color: var(--muted); }
+.value-item { display: flex; gap: 24px; align-items: flex-start; padding: 24px 0; border-bottom: 1px solid var(--border-color); }
+.value-item:first-child { border-top: 1px solid var(--border-color); }
+.value-num { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--accent); letter-spacing: 0.1em; margin-top: 3px; flex-shrink: 0; }
+.value-item h4 { font-size: 1rem; font-weight: 500; margin-bottom: 6px; }
+.value-item p { font-size: 0.9rem; line-height: 1.65; color: var(--text-secondary); }
 
 /* SKILLS */
-#skills {}
-.skills-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; background: var(--border); }
-.skill-group { background: var(--surface2); padding: 44px 48px; }
-.skill-group-name {
-  font-family: 'JetBrains Mono', monospace; font-size: 0.65rem;
-  color: var(--accent); letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 28px;
-}
+.skills-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; background: var(--border-color); }
+.skill-group { background: var(--bg-surface3); padding: 44px 48px; }
+.skill-group-name { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--accent); letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 28px; }
 .skill-item { margin-bottom: 24px; }
 .skill-item:last-child { margin-bottom: 0; }
 .skill-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-.skill-name { font-size: 0.88rem; }
-.skill-pct { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; color: var(--muted); }
-.skill-bar { height: 2px; background: var(--border); }
-.skill-fill { height: 2px; background: var(--accent); width: 0; transition: width 1.2s cubic-bezier(0.4,0,0.2,1); }
+.skill-name { font-size: 0.95rem; font-weight: 500; }
+.skill-pct { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text-secondary); }
+.skill-bar { height: 4px; background: var(--border-color); } 
+.skill-fill { height: 4px; background: var(--accent); width: 0; transition: width 1.2s cubic-bezier(0.4,0,0.2,1); }
 
 /* PROJECTS */
-#projects { background: var(--surface); }
-.project-card { background: var(--surface2); border: 1px solid var(--border); margin-bottom: 2px; overflow: hidden; }
+#projects { background: var(--bg-secondary); }
+.project-card { background: var(--bg-surface3); border: 1px solid var(--border-color); margin-bottom: 2px; overflow: hidden; }
 .project-card:last-child { margin-bottom: 0; }
 
 .project-header { display: flex; justify-content: space-between; align-items: flex-start; padding: 44px 52px 0; gap: 40px; }
 .project-meta-top { display: flex; gap: 10px; align-items: center; margin-bottom: 16px; }
-.project-type {
-  font-family: 'JetBrains Mono', monospace; font-size: 0.65rem;
-  background: var(--accent-dim); color: var(--accent); padding: 4px 10px; letter-spacing: 0.08em;
-}
-.project-period { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: var(--muted); }
+.project-type { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; background: var(--accent-dim); color: var(--accent); padding: 4px 10px; letter-spacing: 0.08em; }
+.project-period { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--text-secondary); }
 .project-title { font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 8px; }
-.project-subtitle { font-size: 0.88rem; color: var(--muted); line-height: 1.5; }
+.project-subtitle { font-size: 0.95rem; color: var(--text-secondary); line-height: 1.5; }
 
 .project-header-right { display: flex; flex-direction: column; gap: 10px; align-items: flex-end; flex-shrink: 0; }
-.project-role-badge {
-  font-family: 'JetBrains Mono', monospace; font-size: 0.65rem;
-  color: var(--bg); background: var(--accent); padding: 5px 14px; letter-spacing: 0.06em;
-}
+.project-role-badge { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--bg-primary); background: var(--accent); padding: 5px 14px; letter-spacing: 0.06em; }
 .project-links { display: flex; gap: 10px; }
-.project-link {
-  font-family: 'JetBrains Mono', monospace; font-size: 0.68rem;
-  color: var(--muted); border: 1px solid var(--border);
-  padding: 7px 16px; text-decoration: none; letter-spacing: 0.08em;
-  transition: color 0.2s, border-color 0.2s;
-}
-.project-link:hover { color: var(--accent); border-color: rgba(79,255,176,0.3); }
+.project-link { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text-secondary); border: 1px solid var(--border-color); padding: 7px 16px; text-decoration: none; letter-spacing: 0.08em; transition: all 0.2s; }
+.project-link:hover { color: var(--accent); border-color: var(--accent); }
 
 .project-body { padding: 36px 52px 48px; }
-.project-desc { font-size: 0.92rem; line-height: 1.85; color: var(--muted); margin-bottom: 36px; max-width: 700px; }
+.project-desc { font-size: 0.95rem; line-height: 1.85; color: var(--text-secondary); margin-bottom: 36px; max-width: 700px; }
 
-/* 프로젝트 화면 미리보기 */
-.project-preview {
-  background: var(--bg);
-  border: 1px solid var(--border);
-  margin-bottom: 36px;
-  overflow: hidden;
-}
-.preview-bar {
-  background: var(--surface2); padding: 10px 16px;
-  display: flex; gap: 7px; align-items: center;
-  border-bottom: 1px solid var(--border);
-}
+.project-preview { background: var(--bg-primary); border: 1px solid var(--border-color); margin-bottom: 36px; overflow: hidden; }
+.preview-bar { background: var(--bg-surface3); padding: 10px 16px; display: flex; gap: 7px; align-items: center; border-bottom: 1px solid var(--border-color); }
 .preview-dot { width: 9px; height: 9px; border-radius: 50%; }
-.preview-url {
-  margin-left: 12px; font-family: 'JetBrains Mono', monospace; font-size: 0.65rem;
-  color: var(--muted); letter-spacing: 0.04em;
-}
+.preview-url { margin-left: 12px; font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--text-secondary); letter-spacing: 0.04em; }
 .preview-content { padding: 24px; }
 
-/* 히트맵 미니 */
-.heatmap-wrap { position: relative; }
-.heatmap-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-.heatmap-title-ui { font-family: 'Syne', sans-serif; font-size: 0.85rem; font-weight: 700; }
-.heatmap-legend { display: flex; gap: 8px; align-items: center; }
-.legend-item { display: flex; gap: 5px; align-items: center; font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; color: var(--muted); }
-.legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+/* 실시간 알림 카드 미니 */
+.alert-list { display: flex; flex-direction: column; gap: 12px; }
+.alert-item { background: var(--bg-primary); padding: 12px 16px; display: flex; gap: 12px; align-items: flex-start; border: 1px solid var(--border-color); border-left: 3px solid transparent; }
+.alert-item.danger { border-left-color: var(--color-danger); }
+.alert-item.warn { border-left-color: var(--color-warning); }
+.alert-item.stable { border-left-color: var(--color-stable); }
+.alert-badge { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; padding: 2px 7px; flex-shrink: 0; margin-top: 1px; letter-spacing: 0.06em; font-weight: 500; }
+.badge-danger { background: rgba(255,107,107,0.15); color: var(--color-danger); }
+[data-theme="light"] .badge-danger { background: rgba(217,48,37,0.15); }
+.badge-warn { background: rgba(251,191,36,0.15); color: var(--color-warning); }
+[data-theme="light"] .badge-warn { background: rgba(230,126,34,0.15); }
+.badge-stable { background: rgba(79,255,176,0.15); color: var(--color-stable); }
+[data-theme="light"] .badge-stable { background: rgba(30,126,52,0.15); }
+.alert-text { font-size: 0.82rem; line-height: 1.45; color: var(--text-secondary); } 
+.alert-text strong { color: var(--text-primary); font-weight: 500; }
+.alert-time { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; color: var(--text-secondary); margin-top: 4px; }
 
-.world-grid {
-  display: grid; grid-template-columns: repeat(12, 1fr); gap: 3px; margin-bottom: 20px;
-}
-.world-cell {
-  height: 28px; border-radius: 2px; cursor: pointer;
-  transition: opacity 0.2s, transform 0.2s;
+/* 프리뷰 하단 레이아웃 그리드 (반반) */
+.preview-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; background: var(--border-color); }
+.preview-panel { background: var(--bg-surface3); padding: 24px; display: flex; flex-direction: column; justify-content: flex-start; }
+.preview-panel-label { font-size: 0.88rem; font-weight: 700; color: var(--text-primary); letter-spacing: 0.05em; margin-bottom: 18px; }
+
+/* 파이프라인 컴포넌트 */
+.pipeline-container { display: flex; flex-direction: column; gap: 12px; width: 100%; }
+.pipeline-step-row { 
+  display: flex; 
+  align-items: center; 
+  background: var(--bg-primary); 
+  border: 1px solid var(--border-color); 
+  padding: 12px 16px; 
   position: relative;
 }
-.world-cell:hover { opacity: 0.8; transform: scale(1.05); }
-.world-cell .tooltip {
-  display: none; position: absolute; bottom: 110%; left: 50%; transform: translateX(-50%);
-  background: var(--surface2); border: 1px solid var(--border);
-  font-family: 'JetBrains Mono', monospace; font-size: 0.6rem;
-  color: var(--text); padding: 4px 8px; white-space: nowrap; z-index: 10;
+.pipe-num { 
+  font-family: 'JetBrains Mono', monospace; 
+  font-size: 0.75rem; 
+  font-weight: 700; 
+  color: var(--accent); 
+  width: 32px; 
+  flex-shrink: 0; 
 }
-.world-cell:hover .tooltip { display: block; }
+.pipe-info { display: flex; flex-direction: column; gap: 2px; }
+.pipe-name { font-size: 0.88rem; font-weight: 700; color: var(--text-primary); }
+.pipe-details { font-size: 0.78rem; color: var(--text-secondary); line-height: 1.4; }
 
-.station-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; background: var(--border); }
-.station-item { background: var(--surface2); padding: 12px 16px; }
-.station-rank { font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; color: var(--accent); margin-bottom: 4px; }
-.station-country { font-size: 0.82rem; font-weight: 500; margin-bottom: 2px; }
-.station-score { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; }
-.score-danger { color: #ff6b6b; }
-.score-warn { color: #fbbf24; }
-.score-safe { color: var(--accent); }
-
-/* 알림 카드 미니 */
-.alert-list { display: flex; flex-direction: column; gap: 2px; }
-.alert-item {
-  background: var(--surface2); padding: 12px 16px;
-  display: flex; gap: 12px; align-items: flex-start;
-  border-left: 3px solid transparent;
-}
-.alert-item.danger { border-left-color: #ff6b6b; }
-.alert-item.warn { border-left-color: #fbbf24; }
-.alert-item.safe { border-left-color: var(--accent); }
-.alert-badge {
-  font-family: 'JetBrains Mono', monospace; font-size: 0.58rem;
-  padding: 2px 7px; flex-shrink: 0; margin-top: 1px; letter-spacing: 0.06em;
-}
-.badge-danger { background: rgba(255,107,107,0.15); color: #ff6b6b; }
-.badge-warn { background: rgba(251,191,36,0.15); color: #fbbf24; }
-.badge-safe { background: var(--accent-dim); color: var(--accent); }
-.alert-text { font-size: 0.8rem; line-height: 1.5; color: var(--muted); }
-.alert-text strong { color: var(--text); font-weight: 500; }
-.alert-time { font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; color: var(--muted); margin-top: 2px; }
-
-.preview-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; background: var(--border); }
-.preview-panel { background: var(--surface2); padding: 18px 20px; }
-.preview-panel-label { font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; color: var(--accent); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 14px; }
-
-/* 파이프라인 다이어그램 */
-.pipeline-diagram { display: flex; align-items: center; gap: 0; overflow-x: auto; padding: 4px 0; }
-.pipe-step {
-  display: flex; flex-direction: column; align-items: center;
-  flex-shrink: 0;
-}
-.pipe-box {
-  background: var(--surface); border: 1px solid var(--border);
-  padding: 10px 14px; text-align: center; min-width: 100px;
-}
-.pipe-box-num { font-family: 'JetBrains Mono', monospace; font-size: 0.58rem; color: var(--accent); margin-bottom: 4px; }
-.pipe-box-name { font-size: 0.75rem; font-weight: 500; margin-bottom: 3px; }
-.pipe-box-tech { font-family: 'JetBrains Mono', monospace; font-size: 0.58rem; color: var(--muted); }
-.pipe-arrow { color: var(--muted); font-size: 1rem; padding: 0 8px; }
-
-/* 기여도 섹션 */
-.contribution-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; background: var(--border); margin-bottom: 32px; }
-.contribution-item { background: var(--surface); padding: 22px 24px; }
-.contribution-label {
-  font-family: 'JetBrains Mono', monospace; font-size: 0.62rem;
-  color: var(--accent); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 10px;
-}
-.contribution-item h5 { font-size: 0.85rem; font-weight: 500; margin-bottom: 6px; }
-.contribution-item p { font-size: 0.8rem; line-height: 1.65; color: var(--muted); }
+/* 태스크(기여도) 섹션 */
+.contribution-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; background: var(--border-color); margin-bottom: 32px; }
+.contribution-item { background: var(--bg-primary); padding: 22px 24px; }
+.contribution-label { font-size: 0.85rem; font-weight: 700; color: var(--accent); letter-spacing: 0.05em; margin-bottom: 10px; display: block; }
+.contribution-item h5 { font-size: 0.95rem; font-weight: 700; margin-bottom: 8px; color: var(--text-primary); }
+.contribution-item p { font-size: 0.88rem; line-height: 1.65; color: var(--text-secondary); }
 
 .project-tags { display: flex; flex-wrap: wrap; gap: 8px; }
-.tag {
-  font-family: 'JetBrains Mono', monospace; font-size: 0.68rem;
-  color: var(--muted); background: rgba(255,255,255,0.04);
-  border: 1px solid var(--border); padding: 5px 12px; letter-spacing: 0.04em;
-  transition: color 0.2s, border-color 0.2s;
-}
-.tag:hover { color: var(--accent); border-color: rgba(79,255,176,0.25); }
+.tag { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--text-secondary); background: rgba(255,255,255,0.04); border: 1px solid var(--border-color); padding: 5px 12px; letter-spacing: 0.04em; }
+.tag:hover { color: var(--accent); border-color: var(--accent); }
 
 /* CONTACT */
-#contact { }
 .contact-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start; }
-.contact-left {}
-.contact-name-block {
-  margin-bottom: 32px;
-}
-.contact-name {
-  font-family: 'Syne', sans-serif;
-  font-size: clamp(2.4rem, 5vw, 4.2rem);
-  font-weight: 800; letter-spacing: -0.03em; line-height: 1.05;
-  margin-bottom: 12px;
-}
+.contact-name { font-family: 'Syne', sans-serif; font-size: clamp(2.4rem, 5vw, 4.2rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1.05; margin-bottom: 12px; }
 .contact-name span { color: var(--accent); }
-.contact-tagline { font-size: 0.92rem; color: var(--muted); line-height: 1.7; max-width: 380px; }
-.contact-links { display: flex; flex-direction: column; gap: 2px; background: var(--border); }
-.contact-row {
-  background: var(--surface2); padding: 22px 28px;
-  display: flex; align-items: center; justify-content: space-between;
-  text-decoration: none; color: var(--text); transition: background 0.2s;
-}
-.contact-row:hover { background: #1f2230; }
+.contact-tagline { font-size: 0.95rem; color: var(--text-secondary); line-height: 1.7; max-width: 380px; }
+.contact-links { display: flex; flex-direction: column; gap: 2px; background: var(--border-color); }
+.contact-row { background: var(--bg-surface3); padding: 22px 28px; display: flex; align-items: center; justify-content: space-between; text-decoration: none; color: var(--text-primary); transition: background 0.2s; }
+.contact-row:hover { background: var(--bg-secondary); }
 .contact-row-left { display: flex; gap: 20px; align-items: center; }
-.contact-row-label {
-  font-family: 'JetBrains Mono', monospace; font-size: 0.65rem;
-  color: var(--accent); letter-spacing: 0.12em; text-transform: uppercase; min-width: 72px;
-}
-.contact-row-val { font-size: 0.88rem; color: var(--muted); }
-.contact-arrow { color: var(--muted); transition: transform 0.2s, color 0.2s; }
+.contact-row-label { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--accent); letter-spacing: 0.12em; text-transform: uppercase; min-width: 72px; }
+.contact-row-val { font-size: 0.95rem; color: var(--text-secondary); }
+.contact-arrow { color: var(--text-secondary); transition: all 0.2s; }
 .contact-row:hover .contact-arrow { transform: translateX(4px); color: var(--accent); }
 
-.contact-right {}
-.contact-status {
-  background: var(--surface);
-  border: 1px solid var(--border); padding: 36px 40px; margin-bottom: 2px;
-}
+.contact-status { background: var(--bg-primary); border: 1px solid var(--border-color); padding: 36px 40px; margin-bottom: 2px; }
 .status-dot-row { display: flex; gap: 8px; align-items: center; margin-bottom: 20px; }
-.status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); animation: pulse 2s infinite; }
+.status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--color-stable); animation: pulse 2s infinite; }
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
-.status-label { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; color: var(--accent); letter-spacing: 0.1em; }
-.status-title { font-family: 'Syne', sans-serif; font-size: 1.2rem; font-weight: 700; margin-bottom: 10px; }
-.status-desc { font-size: 0.85rem; line-height: 1.7; color: var(--muted); }
+.status-label { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--accent); letter-spacing: 0.1em; }
+.status-title { font-family: 'Syne', sans-serif; font-size: 1.25rem; font-weight: 700; margin-bottom: 10px; }
+.status-desc { font-size: 0.92rem; line-height: 1.7; color: var(--text-secondary); }
 
 /* FOOTER */
-footer {
-  padding: 28px 56px; border-top: 1px solid var(--border);
-  display: flex; justify-content: space-between; align-items: center;
-}
-.footer-copy { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: var(--muted); letter-spacing: 0.08em; }
-.footer-back { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: var(--muted); text-decoration: none; letter-spacing: 0.08em; transition: color 0.2s; }
+footer { padding: 28px 56px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+.footer-copy { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--text-secondary); letter-spacing: 0.08em; }
+.footer-back { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--text-secondary); text-decoration: none; letter-spacing: 0.08em; transition: color 0.2s; }
 .footer-back:hover { color: var(--accent); }
 
 /* REVEAL */
@@ -397,7 +336,7 @@ footer {
 
 @media (max-width: 900px) {
   nav { padding: 16px 24px; }
-  .nav-links, .nav-contact { display: none; }
+  .nav-links, .nav-contact, #theme-toggle { display: none; } 
   #home { grid-template-columns: 1fr; padding: 100px 24px 60px; gap: 48px; min-height: auto; }
   .hero-right { display: none; }
   section { padding: 72px 24px; }
@@ -407,8 +346,6 @@ footer {
   .project-header { flex-direction: column; gap: 16px; padding: 28px 24px 0; }
   .project-body { padding: 24px; }
   .preview-grid { grid-template-columns: 1fr; }
-  .pipeline-diagram { flex-wrap: wrap; gap: 8px; }
-  .pipe-arrow { display: none; }
   footer { padding: 24px; flex-direction: column; gap: 12px; }
 }
 </style>
@@ -424,7 +361,12 @@ footer {
     <li><a href="#projects">Projects</a></li>
     <li><a href="#contact">Contact</a></li>
   </ul>
-  <a href="mailto:your@email.com" class="nav-contact">Contact →</a>
+  <div class="nav-right-area">
+    <button id="theme-toggle" aria-label="화면 테마 변경">
+      <span class="mode-icon">🌙</span>
+    </button>
+    <a href="mailto:your@email.com" class="nav-contact">Contact →</a>
+  </div>
 </nav>
 
 <!-- HERO -->
@@ -434,9 +376,9 @@ footer {
     <div class="hero-tag">Software Developer</div>
     <h1 class="hero-name">유진산</h1>
     <p class="hero-role">
-      데이터를 수집하고 분석해<br>
-      <strong>실제로 동작하는 서비스</strong>로 만드는<br>
-      소프트웨어 개발자입니다.
+      데이터 수집 자동화와 정제 프로세스에 흥미를 느끼며,<br>
+      <strong>직면한 기술적 문제를 하나씩 해결해 나가는 과정에서</strong><br>
+      보람을 찾는 주니어 소프트웨어 개발자입니다.
     </p>
     <div class="hero-btns">
       <a href="#projects" class="btn-primary">프로젝트 보기 →</a>
@@ -451,12 +393,13 @@ footer {
         <div class="terminal-dot" style="background:#28c840"></div>
       </div>
       <div class="terminal-body">
+        <div><span class="t-muted">// Backend Dev Persona</span></div>
         <div><span class="t-muted">const </span><span class="t-accent">developer</span><span class="t-muted"> = {</span></div>
         <div>&nbsp;&nbsp;<span class="t-key">name</span><span class="t-muted">: </span><span class="t-string">"유진산"</span><span class="t-muted">,</span></div>
         <div>&nbsp;&nbsp;<span class="t-key">role</span><span class="t-muted">: </span><span class="t-string">"Software Developer"</span><span class="t-muted">,</span></div>
         <div>&nbsp;&nbsp;<span class="t-key">focus</span><span class="t-muted">: [</span></div>
-        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-string">"Data Pipeline"</span><span class="t-muted">,</span></div>
-        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-string">"Machine Learning"</span><span class="t-muted">,</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-string">"Data Processing"</span><span class="t-muted">,</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-string">"Web Scraping"</span><span class="t-muted">,</span></div>
         <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-string">"Web Development"</span></div>
         <div>&nbsp;&nbsp;<span class="t-muted">],</span></div>
         <div>&nbsp;&nbsp;<span class="t-key">available</span><span class="t-muted">: </span><span class="t-accent">true</span></div>
@@ -475,13 +418,13 @@ footer {
       <h2 class="sec-title reveal">코드로 문제를<br>해결하는 개발자</h2>
       <div class="about-text reveal">
         <p>
-          <strong>데이터가 흩어져 있어서 의사결정이 늦어지는 상황</strong>에 관심이 많습니다.
-          SIGNAL 프로젝트에서 글로벌 뉴스 크롤링 파이프라인을 직접 설계하고,
-          BERT 기반 감성 분석 모델을 미세조정해 위험 신호를 자동 분류하는 시스템을 구현했습니다.
+          <strong>정보가 흩어져 있어 발생하는 소통의 지연과 비효율</strong>을 코드로 자동화하여 해결하는 것을 좋아합니다.
+          첫 프로젝트인 SIGNAL을 진행하며 여러 뉴스 매체에 흩어진 데이터를 자동으로 수집하는 환경을 만들고,
+          수집한 텍스트 데이터를 분석 모델과 연결하여 정량적인 위험 지표로 나타낼 수 있도록 구현했습니다.
         </p>
         <p>
-          수집부터 분석, 서비스 연동까지 <strong>end-to-end로 직접 구현</strong>하는 경험을 통해
-          소프트웨어 전반을 이해하는 개발자를 목표로 합니다.
+          단순히 데이터를 가져오는 것에 그치지 않고, 수집 중 발생하는 차단 문제나 인프라 보안 문제를 주도적으로 해결해 보았습니다.
+          <strong>전체적인 데이터 흐름을 직접 구현하고 튼튼하게 다지는 과정</strong>에서 큰 성장을 경험했으며, 앞으로도 기본기가 단단한 개발자로 성장하고자 합니다.
         </p>
       </div>
     </div>
@@ -489,22 +432,22 @@ footer {
       <div class="value-item">
         <div class="value-num">01</div>
         <div>
-          <h4>데이터 기반 사고</h4>
-          <p>직관보다 수치로 판단합니다. Z-Score 이상탐지로 감정적 판단 없이 위험도를 정량화했습니다.</p>
+          <h4>데이터 중심의 생각</h4>
+          <p>개인의 주관적인 짐작 대신, 수집한 텍스트 데이터와 통계치를 바탕으로 객관적인 위험 기준을 정하고자 노력했습니다.</p>
         </div>
       </div>
       <div class="value-item">
         <div class="value-num">02</div>
         <div>
-          <h4>End-to-End 구현</h4>
-          <p>데이터 수집, 전처리, 모델링, 서비스 연동까지 한 프로젝트 내에서 전 과정을 경험했습니다.</p>
+          <h4>흐름에 대한 이해</h4>
+          <p>웹 페이지 스크래핑부터 텍스트 데이터 분석, 데이터베이스 적재, 그리고 사용자가 보는 화면에 전달하기까지의 전체적인 흐름을 직접 연결해 보았습니다.</p>
         </div>
       </div>
       <div class="value-item">
         <div class="value-num">03</div>
         <div>
-          <h4>실행력</h4>
-          <p>7주 안에 기획부터 발표까지 완주했습니다. 완벽보다 동작하는 결과물을 먼저 만듭니다.</p>
+          <h4>끝까지 해결하는 태도</h4>
+          <p>단순 기능 구현에 그치지 않고 수집 서버 차단이나 데이터베이스 보안 노출 등, 프로젝트 중 마주친 크고 작은 문제들을 분석하며 우회책과 해결 방안을 찾았습니다.</p>
         </div>
       </div>
     </div>
@@ -515,44 +458,44 @@ footer {
 <section id="skills">
   <div class="sec-label">// 02 — Skills</div>
   <h2 class="sec-title reveal">기술 스택</h2>
-  <p class="sec-desc reveal">프로젝트를 통해 직접 사용하고 경험한 기술들입니다.</p>
+  <p class="sec-desc reveal">첫 프로젝트를 통해 직접 사용해 보고, 문법과 예외 처리의 기본기를 익힌 기술들입니다.</p>
   <div class="skills-layout reveal">
     <div class="skill-group">
       <div class="skill-group-name">Data / ML</div>
       <div class="skill-item">
-        <div class="skill-meta"><span class="skill-name">Python</span><span class="skill-pct">80%</span></div>
-        <div class="skill-bar"><div class="skill-fill" data-width="80"></div></div>
-      </div>
-      <div class="skill-item">
-        <div class="skill-meta"><span class="skill-name">BERT / Transformers</span><span class="skill-pct">65%</span></div>
-        <div class="skill-bar"><div class="skill-fill" data-width="65"></div></div>
-      </div>
-      <div class="skill-item">
-        <div class="skill-meta"><span class="skill-name">Pandas / Scikit-learn</span><span class="skill-pct">70%</span></div>
-        <div class="skill-bar"><div class="skill-fill" data-width="70"></div></div>
-      </div>
-      <div class="skill-item">
-        <div class="skill-meta"><span class="skill-name">Elasticsearch</span><span class="skill-pct">55%</span></div>
+        <div class="skill-meta"><span class="skill-name">Python</span><span class="skill-pct">55%</span></div>
         <div class="skill-bar"><div class="skill-fill" data-width="55"></div></div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-meta"><span class="skill-name">BERT / NLP Basic</span><span class="skill-pct">40%</span></div>
+        <div class="skill-bar"><div class="skill-fill" data-width="40"></div></div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-meta"><span class="skill-name">Pandas</span><span class="skill-pct">45%</span></div>
+        <div class="skill-bar"><div class="skill-fill" data-width="45"></div></div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-meta"><span class="skill-name">Elasticsearch</span><span class="skill-pct">40%</span></div>
+        <div class="skill-bar"><div class="skill-fill" data-width="40"></div></div>
       </div>
     </div>
     <div class="skill-group">
       <div class="skill-group-name">Web / Backend</div>
       <div class="skill-item">
-        <div class="skill-meta"><span class="skill-name">FastAPI</span><span class="skill-pct">60%</span></div>
-        <div class="skill-bar"><div class="skill-fill" data-width="60"></div></div>
+        <div class="skill-meta"><span class="skill-name">FastAPI</span><span class="skill-pct">45%</span></div>
+        <div class="skill-bar"><div class="skill-fill" data-width="45"></div></div>
       </div>
       <div class="skill-item">
-        <div class="skill-meta"><span class="skill-name">React / JavaScript</span><span class="skill-pct">55%</span></div>
+        <div class="skill-meta"><span class="skill-name">JavaScript</span><span class="skill-pct">40%</span></div>
+        <div class="skill-bar"><div class="skill-fill" data-width="40"></div></div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-meta"><span class="skill-name">MySQL</span><span class="skill-pct">50%</span></div>
+        <div class="skill-bar"><div class="skill-fill" data-width="50"></div></div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-meta"><span class="skill-name">Git / GitHub</span><span class="skill-pct">55%</span></div>
         <div class="skill-bar"><div class="skill-fill" data-width="55"></div></div>
-      </div>
-      <div class="skill-item">
-        <div class="skill-meta"><span class="skill-name">MySQL</span><span class="skill-pct">60%</span></div>
-        <div class="skill-bar"><div class="skill-fill" data-width="60"></div></div>
-      </div>
-      <div class="skill-item">
-        <div class="skill-meta"><span class="skill-name">Git / GitHub</span><span class="skill-pct">70%</span></div>
-        <div class="skill-bar"><div class="skill-fill" data-width="70"></div></div>
       </div>
     </div>
   </div>
@@ -562,7 +505,7 @@ footer {
 <section id="projects">
   <div class="sec-label">// 03 — Projects</div>
   <h2 class="sec-title reveal">프로젝트</h2>
-  <p class="sec-desc reveal">직접 기획하고 코드로 구현한 프로젝트입니다.</p>
+  <p class="sec-desc reveal">기획부터 문제 해결까지 고민의 흔적이 담긴 첫 프로젝트입니다.</p>
 
   <div class="reveal">
     <div class="project-card">
@@ -573,10 +516,10 @@ footer {
             <span class="project-period">2026.04 — 2026.05 · 7주</span>
           </div>
           <h3 class="project-title">SIGNAL</h3>
-          <p class="project-subtitle">AI 무역 리스크 조기경보 플랫폼 — 산업별 핵심 지표 기반 맞춤형 위기 대응 솔루션</p>
+          <p class="project-subtitle">AI 무역 리스크 알림 플랫폼 — 해외 뉴스 기반 맞춤형 위기 조기 탐지 서비스</p>
         </div>
         <div class="project-header-right">
-          <span class="project-role-badge">크롤링 · 기획 · ML</span>
+          <span class="project-role-badge">크롤링 · 기획 · 데이터 가공</span>
           <div class="project-links">
             <a href="https://github.com/wlstks1009-coder/signal_project" class="project-link" target="_blank">GitHub →</a>
           </div>
@@ -585,10 +528,9 @@ footer {
 
       <div class="project-body">
         <p class="project-desc">
-          수출입 중소기업의 88%가 환리스크 관리 수단 없이 위기에 무방비 상태라는 문제에서 출발했습니다.
-          글로벌 뉴스 11개 매체와 환율·원자재 7개 지표를 1시간 단위로 자동 수집하고,
-          BERT 감성 분석과 Z-Score 이상탐지를 결합해 위험도를 주의·경고·심각 3단계로 자동 분류합니다.
-          심각 단계 감지 시 이메일 Push를 즉시 전송하며, 대시보드에서 글로벌 리스크 히트맵으로 한눈에 확인할 수 있습니다.
+          해외 리스크 정보에 취약한 중소기업을 돕기 위해 만든 플랫폼입니다. 
+          주요 외신 뉴스와 경제 지표를 정기적으로 수집하는 자동화 시스템을 만들고, 
+          가져온 뉴스의 본문을 분석 엔진에 연동하여 국가별 위험 징후를 안정·주의·심각 3단계 데이터로 정량화하여 화면에 보여줍니다.
         </p>
 
         <!-- 서비스 화면 미리보기 -->
@@ -597,195 +539,183 @@ footer {
             <div class="preview-dot" style="background:#ff5f57"></div>
             <div class="preview-dot" style="background:#febc2e"></div>
             <div class="preview-dot" style="background:#28c840"></div>
-            <span class="preview-url">signal.app / dashboard</span>
+            <span class="preview-url">signal.app / live-risk-metrics</span>
           </div>
           <div class="preview-content">
-            <!-- 히트맵 -->
-            <div style="margin-bottom:20px;">
-              <div class="heatmap-header">
-                <span class="heatmap-title-ui">글로벌 리스크 히트맵</span>
-                <div class="heatmap-legend">
-                  <div class="legend-item"><div class="legend-dot" style="background:#4fffb0"></div>안전</div>
-                  <div class="legend-item"><div class="legend-dot" style="background:#fbbf24"></div>경고</div>
-                  <div class="legend-item"><div class="legend-dot" style="background:#ff6b6b"></div>심각</div>
-                  <div class="legend-item"><div class="legend-dot" style="background:#2a2d38"></div>데이터없음</div>
-                </div>
+            
+            <div style="margin-bottom:24px;">
+              <div style="margin-bottom: 14px;">
+                <span style="font-family:'JetBrains Mono', monospace; font-size:0.8rem; color:var(--accent); letter-spacing:0.05em; font-weight: 700;">
+                  // 국가별 계산된 실시간 위험 지수 (화면 매핑용 데이터 소스)
+                </span>
               </div>
-              <div class="world-grid">
-                <div class="world-cell" style="background:#ff6b6b"><div class="tooltip">미국 · 위험도 87</div></div>
-                <div class="world-cell" style="background:#2a2d38"></div>
-                <div class="world-cell" style="background:#fbbf24"><div class="tooltip">독일 · 위험도 54</div></div>
-                <div class="world-cell" style="background:#ff6b6b"><div class="tooltip">중국 · 위험도 91</div></div>
-                <div class="world-cell" style="background:#2a2d38"></div>
-                <div class="world-cell" style="background:#4fffb0"><div class="tooltip">호주 · 위험도 22</div></div>
-                <div class="world-cell" style="background:#fbbf24"><div class="tooltip">일본 · 위험도 61</div></div>
-                <div class="world-cell" style="background:#2a2d38"></div>
-                <div class="world-cell" style="background:#fbbf24"><div class="tooltip">브라질 · 위험도 58</div></div>
-                <div class="world-cell" style="background:#4fffb0"><div class="tooltip">캐나다 · 위험도 18</div></div>
-                <div class="world-cell" style="background:#ff6b6b"><div class="tooltip">베트남 · 위험도 79</div></div>
-                <div class="world-cell" style="background:#2a2d38"></div>
 
-                <div class="world-cell" style="background:#4fffb0"><div class="tooltip">프랑스 · 위험도 31</div></div>
-                <div class="world-cell" style="background:#ff6b6b"><div class="tooltip">러시아 · 위험도 83</div></div>
-                <div class="world-cell" style="background:#2a2d38"></div>
-                <div class="world-cell" style="background:#fbbf24"><div class="tooltip">인도 · 위험도 66</div></div>
-                <div class="world-cell" style="background:#4fffb0"><div class="tooltip">뉴질랜드 · 위험도 14</div></div>
-                <div class="world-cell" style="background:#2a2d38"></div>
-                <div class="world-cell" style="background:#fbbf24"><div class="tooltip">멕시코 · 위험도 49</div></div>
-                <div class="world-cell" style="background:#ff6b6b"><div class="tooltip">이란 · 위험도 94</div></div>
-                <div class="world-cell" style="background:#4fffb0"><div class="tooltip">스웨덴 · 위험도 20</div></div>
-                <div class="world-cell" style="background:#2a2d38"></div>
-                <div class="world-cell" style="background:#fbbf24"><div class="tooltip">말레이시아 · 위험도 55</div></div>
-                <div class="world-cell" style="background:#4fffb0"><div class="tooltip">덴마크 · 위험도 17</div></div>
-              </div>
-              <!-- Signal Station -->
-              <div class="station-row">
-                <div class="station-item">
-                  <div class="station-rank">01 — TOP RISK</div>
-                  <div class="station-country">중국 (CHN)</div>
-                  <div class="station-score score-danger">SIGNAL 91.4</div>
+              <div style="display: flex; flex-direction: column; gap: 2px; background: var(--border-color);">
+                
+                <!-- CHN -->
+                <div style="background: var(--bg-surface3); padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;">
+                  <div style="display: flex; align-items: center; gap: 16px;">
+                    <span style="font-family:'JetBrains Mono', monospace; font-size:0.75rem; color:var(--text-secondary); font-weight: 700;">CHN</span>
+                    <span style="font-size:0.85rem; font-weight:500;">중국 (China)</span>
+                    <span style="font-family:'JetBrains Mono', monospace; font-size:0.65rem; background:rgba(255,107,107,0.1); color:var(--color-danger); padding:2px 8px; border:1px solid rgba(255,107,107,0.2); font-weight: 700;">CRITICAL</span>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 20px;">
+                    <div style="width: 120px; height: 4px; background: var(--bg-primary); position: relative;">
+                      <div style="position: absolute; top: 0; left: 0; height: 100%; width: 91%; background: var(--color-danger);"></div>
+                    </div>
+                    <span style="font-family:'JetBrains Mono', monospace; font-size:0.8rem; color:var(--color-danger); font-weight:700;">91.4 Score</span>
+                  </div>
                 </div>
-                <div class="station-item">
-                  <div class="station-rank">02 — TOP RISK</div>
-                  <div class="station-country">미국 (USA)</div>
-                  <div class="station-score score-danger">SIGNAL 87.2</div>
+
+                <!-- USA -->
+                <div style="background: var(--bg-surface3); padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;">
+                  <div style="display: flex; align-items: center; gap: 16px;">
+                    <span style="font-family:'JetBrains Mono', monospace; font-size:0.75rem; color:var(--text-secondary); font-weight: 700;">USA</span>
+                    <span style="font-size:0.85rem; font-weight:500;">미국 (United States)</span>
+                    <span style="font-family:'JetBrains Mono', monospace; font-size:0.65rem; background:rgba(255,107,107,0.1); color:var(--color-danger); padding:2px 8px; border:1px solid rgba(255,107,107,0.2); font-weight: 700;">CRITICAL</span>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 20px;">
+                    <div style="width: 120px; height: 4px; background: var(--bg-primary); position: relative;">
+                      <div style="position: absolute; top: 0; left: 0; height: 100%; width: 87%; background: var(--color-danger);"></div>
+                    </div>
+                    <span style="font-family:'JetBrains Mono', monospace; font-size:0.8rem; color:var(--color-danger); font-weight:700;">87.2 Score</span>
+                  </div>
                 </div>
-                <div class="station-item">
-                  <div class="station-rank">03 — TOP RISK</div>
-                  <div class="station-country">베트남 (VNM)</div>
-                  <div class="station-score score-warn">SIGNAL 79.1</div>
+
+                <!-- VNM -->
+                <div style="background: var(--bg-surface3); padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;">
+                  <div style="display: flex; align-items: center; gap: 16px;">
+                    <span style="font-family:'JetBrains Mono', monospace; font-size:0.75rem; color:var(--text-secondary); font-weight: 700;">VNM</span>
+                    <span style="font-size:0.85rem; font-weight:500;">베트남 (Vietnam)</span>
+                    <span style="font-family:'JetBrains Mono', monospace; font-size:0.65rem; background:rgba(251,191,36,0.1); color:var(--color-warning); padding:2px 8px; border:1px solid rgba(251,191,36,0.2); font-weight: 700;">WARNING</span>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 20px;">
+                    <div style="width: 120px; height: 4px; background: var(--bg-primary); position: relative;">
+                      <div style="position: absolute; top: 0; left: 0; height: 100%; width: 79%; background: var(--color-warning);"></div>
+                    </div>
+                    <span style="font-family:'JetBrains Mono', monospace; font-size:0.8rem; color:var(--color-warning); font-weight:700;">79.1 Score</span>
+                  </div>
                 </div>
+
               </div>
             </div>
 
-            <!-- 실시간 알림 + 파이프라인 -->
+            <!-- 실시간 알림 + 파이프라인 그리드 -->
             <div class="preview-grid">
+              
+              <!-- 💡 알림 데모 로그 1개 추가하여 오른쪽과 높이 매칭 완료 -->
               <div class="preview-panel">
-                <div class="preview-panel-label">실시간 알림</div>
+                <div class="preview-panel-label">실시간 리스크 판단 및 알림 데모</div>
                 <div class="alert-list">
                   <div class="alert-item danger">
                     <span class="alert-badge badge-danger">심각</span>
                     <div>
-                      <div class="alert-text"><strong>중국 공급망 단절 위험 감지</strong><br>희토류 수출 제한 관련 뉴스 급증, 환율 임계치 초과</div>
-                      <div class="alert-time">2분 전 · 이메일 전송 완료</div>
+                      <div class="alert-text"><strong>중국 원자재 수출 제한 위험 감지</strong><br>희토류 및 핵심 광물 수출 규제 뉴스 급증</div>
+                      <div class="alert-time">2분 전 · 인프라 모니터링 로그</div>
                     </div>
                   </div>
                   <div class="alert-item warn">
-                    <span class="alert-badge badge-warn">경고</span>
+                    <span class="alert-badge badge-warn">주의</span>
                     <div>
-                      <div class="alert-text"><strong>미국 관세 정책 변동</strong><br>철강·알루미늄 관련 키워드 빈도 상승</div>
-                      <div class="alert-time">18분 전</div>
+                      <div class="alert-text"><strong>미국 추가 관세 검토 정책 변동</strong><br>관련 수입 규제 키워드 빈도 매칭 확인</div>
+                      <div class="alert-time">18분 전 · 동기화 시스템 작동</div>
                     </div>
                   </div>
-                  <div class="alert-item safe">
-                    <span class="alert-badge badge-safe">주의</span>
+                  <div class="alert-item stable">
+                    <span class="alert-badge badge-stable">안정</span>
                     <div>
-                      <div class="alert-text"><strong>베트남 물류 지연 신호</strong><br>항만 파업 관련 뉴스 감지</div>
-                      <div class="alert-time">1시간 전</div>
+                      <div class="alert-text"><strong>글로벌 해운 운임지수 일시 상승</strong><br>특정 항만 정체 현상에 따른 지표 분석 완료</div>
+                      <div class="alert-time">1시간 전 · 스케줄러 수집 결과</div>
                     </div>
                   </div>
                 </div>
               </div>
+              
+              <!-- 데이터 처리 및 수집 부분 파이프라인 -->
               <div class="preview-panel">
-                <div class="preview-panel-label">데이터 파이프라인</div>
-                <div class="pipeline-diagram">
-                  <div class="pipe-step">
-                    <div class="pipe-box">
-                      <div class="pipe-box-num">01</div>
-                      <div class="pipe-box-name">수집</div>
-                      <div class="pipe-box-tech">APScheduler</div>
+                <div class="preview-panel-label">데이터 수집 및 처리 흐름 (Pipeline)</div>
+                <div class="pipeline-container">
+                  
+                  <div class="pipeline-step-row">
+                    <div class="pipe-num">01</div>
+                    <div class="pipe-info">
+                      <div class="pipe-name">외신 뉴스 정기 스크래핑</div>
+                      <div class="pipe-details">Selenium 및 스케줄러를 활용해 글로벌 주요 경제 뉴스를 누락 없이 자동 수집</div>
                     </div>
                   </div>
-                  <div class="pipe-arrow">→</div>
-                  <div class="pipe-step">
-                    <div class="pipe-box">
-                      <div class="pipe-box-num">02</div>
-                      <div class="pipe-box-name">분석</div>
-                      <div class="pipe-box-tech">BERT · Nori</div>
+
+                  <div class="pipeline-step-row">
+                    <div class="pipe-num">02</div>
+                    <div class="pipe-info">
+                      <div class="pipe-name">불필요한 텍스트 가공 및 정제</div>
+                      <div class="pipe-details">수집된 HTML 본문 내 광고, 기자 이메일 등을 제외하고 순수 텍스트 본문 추출</div>
                     </div>
                   </div>
-                  <div class="pipe-arrow">→</div>
-                  <div class="pipe-step">
-                    <div class="pipe-box">
-                      <div class="pipe-box-num">03</div>
-                      <div class="pipe-box-name">등급화</div>
-                      <div class="pipe-box-tech">Z-Score</div>
+
+                  <div class="pipeline-step-row">
+                    <div class="pipe-num">03</div>
+                    <div class="pipe-info">
+                      <div class="pipe-name">문맥 기반의 위험도 산출</div>
+                      <div class="pipe-details">자연어 가공 기법과 커스텀 경제 단어 사전을 매핑하여 위기 수준을 정량적 점수로 변환</div>
                     </div>
                   </div>
-                  <div class="pipe-arrow">→</div>
-                  <div class="pipe-step">
-                    <div class="pipe-box">
-                      <div class="pipe-box-num">04</div>
-                      <div class="pipe-box-name">전송</div>
-                      <div class="pipe-box-tech">Email Push</div>
+
+                  <div class="pipeline-step-row">
+                    <div class="pipe-num">04</div>
+                    <div class="pipe-info">
+                      <div class="pipe-name">알림 데이터 분기 및 DB 적재</div>
+                      <div class="pipe-details">계산된 점수가 '심각' 이상일 경우 실시간 알림 큐로 전송하고, 안전하게 원격 DB 저장</div>
                     </div>
                   </div>
-                </div>
-                <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);">
-                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;background:var(--border);">
-                    <div style="background:var(--surface);padding:10px 12px;text-align:center;">
-                      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--accent);margin-bottom:3px;">매체</div>
-                      <div style="font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:700;">11개</div>
-                    </div>
-                    <div style="background:var(--surface);padding:10px 12px;text-align:center;">
-                      <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--accent);margin-bottom:3px;">수집주기</div>
-                      <div style="font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:700;">1hr</div>
-                    </div>
-                  </div>
+
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- 내가 한 일 -->
+        <!-- 핵심 해결 과제 및 성과 -->
         <div class="contribution-grid">
           <div class="contribution-item">
-            <div class="contribution-label">문제 & 접근</div>
-            <h5>크롤링 파이프라인 설계</h5>
-            <p>11개 글로벌 매체에서 뉴스를 안정적으로 수집하는 자동화 배치를 APScheduler로 구현. 수집 실패 예외 처리와 중복 데이터 필터링 로직 직접 설계.</p>
+            <span class="contribution-label">Task 01 — 데이터 자동 수집</span>
+            <h5>수집 안정성 확보 및 웹 차단 해결</h5>
+            <p><strong>[문제]</strong> 다량의 해외 매체 스크래핑 시 봇 탐지 시스템에 의해 임시 차단되거나 로딩 지연이 발생하는 문제 발생.<br><strong>[해결]</strong> 웹 드라이버 우회 설정을 적용하고 주기적으로 수집을 반복하는 스케줄러를 등록하여 차단 없이 안정적으로 데이터를 가져오도록 개선했습니다.</p>
           </div>
           <div class="contribution-item">
-            <div class="contribution-label">핵심 구현</div>
-            <h5>BERT 미세조정 & 위험도 분류</h5>
-            <p>한국어 BERT + Nori 형태소 분석기로 뉴스 키워드를 추출하고, Z-Score 기반 이상탐지로 환율·원자재·뉴스 감성을 통합한 Signal Score 산출 로직 개발.</p>
+            <span class="contribution-label">Task 02 — 인프라 및 보안</span>
+            <h5>안전한 데이터베이스 접근 환경 구축</h5>
+            <p><strong>[문제]</strong> 외부 데이터베이스를 연동하는 과정에서 포트 포워딩으로 공인 IP를 직접 노출할 시 발생하는 보안 위험성 인지.<br><strong>[해결]</strong> 가상 사설망 서비스인 Tailscale을 도입하여, 외부 포트 노출 없이 기기 간 일대일 암호화 네트워크 환경을 구축하여 원격 적재를 안전하게 완료했습니다.</p>
           </div>
           <div class="contribution-item">
-            <div class="contribution-label">결과</div>
-            <h5>7주 완성, 3단계 분류 자동화</h5>
-            <p>기획·데이터·ML·발표까지 7주 안에 완료. 주관적 판단 없이 데이터 임계치만으로 위험도를 3단계 자동 분류하는 시스템 완성.</p>
+            <span class="contribution-label">Task 03 — 데이터 정제 및 가공</span>
+            <h5>분석 모델 활용 및 위험 지수 기준 수립</h5>
+            <p><strong>[문제]</strong> 일반적인 형태소 분석만으로는 경제·무역 특유의 부정적 단어(규제, 차질 등)를 완벽히 인지하기 어려운 한계 발견.<br><strong>[해결]</strong> 한국어 자연어 처리 모델인 BERT를 활용해 기사 문맥을 파악하고, 자체 커스텀 단어 사전을 매핑한 뒤 수집 빈도를 점수화하여 위험 기준을 다듬었습니다.</p>
           </div>
         </div>
 
         <div class="project-tags">
           <span class="tag">Python</span>
-          <span class="tag">BERT</span>
           <span class="tag">FastAPI</span>
+          <span class="tag">BERT Basic</span>
           <span class="tag">Elasticsearch</span>
+          <span class="tag">Tailscale VPN</span>
           <span class="tag">MySQL</span>
-          <span class="tag">React</span>
-          <span class="tag">APScheduler</span>
-          <span class="tag">Nori</span>
-          <span class="tag">Z-Score</span>
+          <span class="tag">GeoJSON</span>
         </div>
       </div>
-    </div>
-
-    <div class="project-card" style="padding:44px 52px;border:1px dashed rgba(79,255,176,0.15);background:transparent;margin-top:2px;display:flex;align-items:center;justify-content:center;">
-      <p style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:var(--muted);letter-spacing:0.1em;">다음 프로젝트 준비 중 · Coming soon</p>
     </div>
   </div>
 </section>
 
 <!-- CONTACT -->
-<section id="contact" style="background:var(--surface);">
+<section id="contact" style="background:var(--bg-primary);">
   <div class="sec-label">// 04 — Contact</div>
   <div class="contact-layout">
     <div class="contact-left">
       <div class="contact-name-block reveal">
         <h2 class="contact-name">유진산<br><span>Software</span><br><span>Developer</span></h2>
       </div>
-      <p class="contact-tagline reveal">새로운 기회와 협업에 열려 있습니다.<br>편하게 연락주세요.</p>
+      <p class="contact-tagline reveal">문제를 집요하게 파고들어 코드로 해결책을 만들어 나갑니다.<br>새로운 기회와 협업을 기다리고 있습니다.</p>
     </div>
     <div class="contact-right reveal">
       <div class="contact-status">
@@ -793,8 +723,8 @@ footer {
           <div class="status-dot"></div>
           <span class="status-label">Currently available</span>
         </div>
-        <div class="status-title">취업 기회를 찾고 있습니다</div>
-        <div class="status-desc">소프트웨어 개발 전반에 관심이 있으며, 특히 데이터 파이프라인과 AI 서비스 구현 경험을 살릴 수 있는 포지션을 찾고 있습니다.</div>
+        <div class="status-title">백엔드 / 데이터 엔지니어 포지션을 제안받고 있습니다</div>
+        <div class="status-desc">데이터 수집 자동화와 정제 프로세스에 흥미를 느끼며, 직면한 기술적 문제를 하나씩 해결해 나가는 과정에서 보람을 찾는 주니어 개발자입니다.</div>
       </div>
       <div class="contact-links" style="margin-top:2px;">
         <a href="mailto:your@email.com" class="contact-row">
@@ -804,24 +734,42 @@ footer {
           </div>
           <span class="contact-arrow">→</span>
         </a>
-        <a href="https://github.com/wlstks1009-coder" class="contact-row" target="_blank">
-          <div class="contact-row-left">
-            <span class="contact-row-label">GitHub</span>
-            <span class="contact-row-val">github.com/wlstks1009-coder</span>
-          </div>
-          <span class="contact-arrow">→</span>
-        </a>
       </div>
     </div>
   </div>
 </section>
 
 <footer>
-  <span class="footer-copy">© 유진산 · Software Developer</span>
+  <span class="footer-copy">© 2026 유진산 · Software Developer</span>
   <a href="#home" class="footer-back">↑ Back to top</a>
 </footer>
 
 <script>
+document.addEventListener('DOMContentLoaded', () => {
+  const themeToggleBtn = document.getElementById('theme-toggle');
+  const modeIcon = themeToggleBtn.querySelector('.mode-icon');
+  
+  const currentTheme = localStorage.getItem('theme');
+  if (currentTheme === 'light') {
+    document.documentElement.setAttribute('data-theme', 'light');
+    modeIcon.textContent = '☀️';
+  }
+
+  themeToggleBtn.addEventListener('click', () => {
+    let theme = 'dark';
+    if (!document.documentElement.hasAttribute('data-theme')) {
+      document.documentElement.setAttribute('data-theme', 'light');
+      modeIcon.textContent = '☀️';
+      theme = 'light';
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+      modeIcon.textContent = '🌙';
+      theme = 'dark';
+    }
+    localStorage.setItem('theme', theme);
+  });
+});
+
 const nav = document.getElementById('nav');
 window.addEventListener('scroll', () => {
   nav.classList.toggle('scrolled', window.scrollY > 40);
