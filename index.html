@@ -347,7 +347,165 @@ section { padding: 110px 56px; }
 .contribution-item h5 { font-size: 0.95rem; font-weight: 700; margin-bottom: 8px; color: var(--text-primary); }
 .contribution-item p { font-size: 0.88rem; line-height: 1.65; color: var(--text-secondary); }
 
-.project-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+/* 아키텍처 섹션 */
+.architecture-box {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  padding: 40px 28px;
+  border-radius: 2px;
+  overflow-x: auto;
+}
+
+/* 전체 가로 흐름 — 수직 중앙 정렬 */
+.arch-flow {
+  display: flex;
+  flex-direction: row;
+  align-items: center;   /* 모든 자식을 수직 중앙 정렬 */
+  justify-content: center;
+  gap: 0;
+  min-width: 760px;
+}
+
+/* 단일 스텝 노드 */
+.arch-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 5px;
+  width: 128px;
+  height: 100px;          /* 고정 높이 → 분기 노드와 동일하게 맞춤 */
+  padding: 0 14px;
+  background: var(--bg-surface3);
+  border: 1px solid var(--border-color);
+  flex-shrink: 0;
+  transition: border-color 0.2s, background 0.2s;
+}
+.arch-step:hover {
+  border-color: var(--accent);
+  background: rgba(79,255,176,0.04);
+}
+.arch-step.arch-highlight {
+  background: var(--accent-dim);
+  border-color: var(--accent);
+}
+.arch-step-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.58rem;
+  color: var(--accent);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+.arch-step-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.25;
+  white-space: nowrap;
+}
+.arch-step.arch-highlight .arch-step-title { color: var(--accent); }
+.arch-step-sub {
+  font-size: 0.68rem;
+  color: var(--text-secondary);
+  line-height: 1.45;
+  white-space: nowrap;
+}
+
+/* 화살표 */
+.arch-arrow-h {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 32px;
+  color: var(--accent);
+  font-size: 1rem;
+  line-height: 1;
+}
+
+/* 분기 묶음 — 두 카드를 세로로 */
+.arch-branch {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  flex-shrink: 0;
+}
+.arch-branch-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 4px;
+  width: 148px;
+  height: 50px;           /* 두 카드 합산 100px = arch-step 높이와 동일 */
+  padding: 0 12px;
+  background: var(--bg-surface3);
+  border: 1px solid var(--border-color);
+  transition: border-color 0.2s;
+}
+/* 두 번째 카드 위쪽 테두리 제거해 하나처럼 */
+.arch-branch-step + .arch-branch-step {
+  border-top: 1px solid var(--border-color);
+}
+.arch-branch-step:hover { border-color: var(--accent); }
+.arch-branch-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.56rem;
+  color: var(--accent);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+.arch-branch-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  white-space: nowrap;
+  line-height: 1.2;
+}
+.arch-branch-sub {
+  font-size: 0.64rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  line-height: 1.3;
+}
+
+@media (max-width: 768px) {
+  .arch-flow {
+    flex-direction: column;
+    align-items: center;
+    min-width: auto;
+    gap: 0;
+  }
+  .arch-arrow-h { transform: rotate(90deg); width: auto; height: 28px; }
+  .arch-step { width: 180px; height: auto; padding: 14px 16px; }
+  .arch-branch { flex-direction: column; }
+  .arch-branch-step { width: 180px; height: auto; padding: 12px 16px; }
+  .arch-step-title, .arch-step-sub,
+  .arch-branch-title, .arch-branch-sub { white-space: normal; }
+}
+
+/* 코드 섹션 */
+.code-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 40px; }
+.code-item { display: flex; flex-direction: column; }
+.code-header { margin-bottom: 16px; display: flex; flex-direction: column; gap: 8px; }
+.code-label { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--accent); letter-spacing: 0.08em; text-transform: uppercase; font-weight: 700; }
+.code-title { font-size: 0.95rem; font-weight: 600; color: var(--text-primary); }
+.code-item .terminal-card { flex: 1; margin-bottom: 14px; }
+.code-desc { font-size: 0.85rem; line-height: 1.6; color: var(--text-secondary); padding: 0 2px; }
+
+@media (max-width: 1200px) {
+  .code-grid-3 { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 768px) {
+  .code-grid-3 { grid-template-columns: 1fr; }
+  .arch-step, .arch-parallel-step { min-width: 140px; padding: 12px 20px; font-size: 0.85rem; }
+}
 .tag { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--text-secondary); background: rgba(255,255,255,0.04); border: 1px solid var(--border-color); padding: 5px 12px; letter-spacing: 0.04em; }
 .tag:hover { color: var(--accent); border-color: var(--accent); }
 
@@ -738,6 +896,179 @@ footer { padding: 28px 56px; border-top: 1px solid var(--border-color); display:
             <span class="contribution-label">Task 03 — 데이터 정제 및 가공</span>
             <h5>분석 모델 활용 및 위험 지수 기준 수립</h5>
             <p><strong>[문제]</strong> 일반적인 형태소 분석만으로는 경제·무역 특유의 부정적 단어(규제, 차질 등)를 완벽히 인지하기 어려운 한계 발견.<br><strong>[해결]</strong> 한국어 자연어 처리 모델인 BERT를 활용해 기사 문맥을 파악하고, 자체 커스텀 단어 사전을 매핑한 뒤 수집 빈도를 점수화하여 위험 기준을 다듬었습니다.</p>
+          </div>
+        </div>
+
+        <!-- 아키텍처 -->
+        <div style="margin-top: 48px; margin-bottom: 48px;">
+          <h3 style="font-family: 'Syne', sans-serif; font-size: 1.4rem; font-weight: 700; margin-bottom: 32px; color: var(--text-primary);">Architecture</h3>
+          <div class="architecture-box">
+            <div class="arch-flow">
+
+              <!-- Step 01 -->
+              <div class="arch-step">
+                <span class="arch-step-label">Step 01</span>
+                <span class="arch-step-title">뉴스 수집</span>
+                <span class="arch-step-sub">해외 뉴스 데이터 수집</span>
+              </div>
+
+              <div class="arch-arrow-h">→</div>
+
+              <!-- Step 02 -->
+              <div class="arch-step">
+                <span class="arch-step-label">Step 02</span>
+                <span class="arch-step-title">번역 및 전처리</span>
+                <span class="arch-step-sub">텍스트 정제 및 노이즈 제거</span>
+              </div>
+
+              <div class="arch-arrow-h">→</div>
+
+              <!-- Step 03: 병렬 분기 (높이 100px = arch-step 동일) -->
+              <div class="arch-branch">
+                <div class="arch-branch-step">
+                  <span class="arch-branch-label">Branch A</span>
+                  <span class="arch-branch-title">BERT 감성 분석</span>
+                  <span class="arch-branch-sub">기사 문맥 기반 위험 신호 추출</span>
+                </div>
+                <div class="arch-branch-step">
+                  <span class="arch-branch-label">Branch B</span>
+                  <span class="arch-branch-title">경제 지표 분석</span>
+                  <span class="arch-branch-sub">환율 및 원자재 변동성 정량화</span>
+                </div>
+              </div>
+
+              <div class="arch-arrow-h">→</div>
+
+              <!-- Step 04 -->
+              <div class="arch-step arch-highlight">
+                <span class="arch-step-label">Step 04</span>
+                <span class="arch-step-title">위험도 산정</span>
+                <span class="arch-step-sub">AI + 경제 지표 하이브리드 점수</span>
+              </div>
+
+              <div class="arch-arrow-h">→</div>
+
+              <!-- Step 05 -->
+              <div class="arch-step">
+                <span class="arch-step-label">Step 05</span>
+                <span class="arch-step-title">Gemini 리포트</span>
+                <span class="arch-step-sub">위험 요약 및 대응 인사이트</span>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- 핵심 기술 구현 -->
+        <div style="margin-top: 48px;">
+          <h3 style="font-family: 'Syne', sans-serif; font-size: 1.4rem; font-weight: 700; margin-bottom: 32px; color: var(--text-primary);">Technical Highlights</h3>
+          
+          <div class="code-grid-3">
+            <!-- Algorithm 01: AI + 경제지표 기반 위험도 산정 -->
+            <div class="code-item">
+              <div class="code-header">
+                <span class="code-label">Algorithm 01</span>
+                <span class="code-title">AI + 경제지표 기반 위험도 산정</span>
+              </div>
+              <div class="terminal-card">
+                <div class="terminal-bar">
+                  <div class="terminal-dot" style="background: #ff6b6b;"></div>
+                  <div class="terminal-dot" style="background: #fbbf24;"></div>
+                  <div class="terminal-dot" style="background: #4fffb0;"></div>
+                  <span style="font-size: 0.7rem; color: var(--text-secondary); margin-left: 8px;">risk_calculation.py</span>
+                </div>
+                <div class="terminal-body">
+<span class="t-muted"># AI 감성 점수와 키워드 점수 결합</span><br>
+final_sent_score = <span class="t-accent">round</span>(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(ai_score * <span class="t-string">0.7</span>) + (keyword_score * <span class="t-string">0.3</span>),<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-string">4</span><br>
+)<br>
+<br>
+<span class="t-muted"># -1~1 → 0~1 범위 정규화</span><br>
+normalized_ai_score = (final_sent_score + <span class="t-string">1</span>) / <span class="t-string">2</span><br>
+<br>
+<span class="t-muted"># 기사 중요도에 따라 동적 가중치 조정</span><br>
+<span class="t-key">if</span> normalized_ai_score &lt;= <span class="t-string">0.25</span> <span class="t-key">or</span> &gt;= <span class="t-string">0.65</span>:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;total = normalized_ai_score * <span class="t-string">0.9</span> + raw_indicator_score * <span class="t-string">0.1</span><br>
+<span class="t-key">else</span>:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;total = normalized_ai_score * <span class="t-string">0.7</span> + raw_indicator_score * <span class="t-string">0.3</span><br>
+<br>
+<span class="t-muted"># 최종 위험 등급</span><br>
+risk_lv = <span class="t-string">"심각"</span> <span class="t-key">if</span> total &lt;= <span class="t-string">0.2</span> <span class="t-key">else</span> <span class="t-string">"주의"</span> <span class="t-key">if</span> total &lt;= <span class="t-string">0.63</span> <span class="t-key">else</span> <span class="t-string">"안정"</span>
+                </div>
+              </div>
+              <p class="code-desc">BERT 감성 분석 결과와 경제 지표를 결합하여 공급망 리스크를 정량화했습니다. 극단적인 뉴스(심각/안정)에는 AI 점수 비중을 높이고, 중간 신호(주의)에는 경제 지표를 더 반영하는 동적 가중치를 적용했습니다.</p>
+            </div>
+
+            <!-- Algorithm 02: 경제지표 위험도 계산 -->
+            <div class="code-item">
+              <div class="code-header">
+                <span class="code-label">Algorithm 02</span>
+                <span class="code-title">경제지표 위험도 계산</span>
+              </div>
+              <div class="terminal-card">
+                <div class="terminal-bar">
+                  <div class="terminal-dot" style="background: #ff6b6b;"></div>
+                  <div class="terminal-dot" style="background: #fbbf24;"></div>
+                  <div class="terminal-dot" style="background: #4fffb0;"></div>
+                  <span style="font-size: 0.7rem; color: var(--text-secondary); margin-left: 8px;">economic_indicator.py</span>
+                </div>
+                <div class="terminal-body">
+<span class="t-muted"># 최근 14일 데이터 기반 Z-Score 계산</span><br>
+indicator_stats[i] = <span class="t-accent">calculate_indicator_score</span>(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;prices[-<span class="t-string">1</span>],<br>
+&nbsp;&nbsp;&nbsp;&nbsp;prices[:-<span class="t-string">1</span>]<br>
+)<br>
+<br>
+<span class="t-muted"># 환율 그룹 (1-4): USD, JPY, CNY, EUR</span><br>
+ex_score = <span class="t-accent">aggregate_indicator</span>(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[indicator_stats.<span class="t-key">get</span>(i) <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-key">for</span> i <span class="t-key">in</span> <span class="t-accent">range</span>(<span class="t-string">1</span>, <span class="t-string">5</span>)]<br>
+)<br>
+<br>
+<span class="t-muted"># 원자재 그룹 (5-12): 유가, 천연가스 등</span><br>
+ma_score = <span class="t-accent">aggregate_indicator</span>(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[indicator_stats.<span class="t-key">get</span>(i) <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-key">for</span> i <span class="t-key">in</span> <span class="t-accent">range</span>(<span class="t-string">5</span>, <span class="t-string">12</span>)]<br>
+)<br>
+<br>
+raw_indicator_score = (ex_score * <span class="t-string">0.5</span> + ma_score * <span class="t-string">0.5</span>)
+                </div>
+              </div>
+              <p class="code-desc">최근 14일 데이터를 기반으로 Z-Score를 계산하여 환율 및 원자재 변동성을 정량화했습니다. 환율(4종)과 원자재(7종)를 분리하여 각각 가중치를 부여함으로써 공급망 리스크의 다양한 신호를 포착합니다.</p>
+            </div>
+
+            <!-- Algorithm 03: BERT 입력 최적화 -->
+            <div class="code-item">
+              <div class="code-header">
+                <span class="code-label">Algorithm 03</span>
+                <span class="code-title">BERT 입력 최적화</span>
+              </div>
+              <div class="terminal-card">
+                <div class="terminal-bar">
+                  <div class="terminal-dot" style="background: #ff6b6b;"></div>
+                  <div class="terminal-dot" style="background: #fbbf24;"></div>
+                  <div class="terminal-dot" style="background: #4fffb0;"></div>
+                  <span style="font-size: 0.7rem; color: var(--text-secondary); margin-left: 8px;">text_optimization.py</span>
+                </div>
+                <div class="terminal-body">
+<span class="t-key">def</span> <span class="t-accent">get_balanced_text</span>(text, max_len=<span class="t-string">512</span>):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-key">if</span> <span class="t-accent">len</span>(text) &lt;= max_len:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-key">return</span> text<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;part_len = max_len // <span class="t-string">3</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;first = text[:part_len]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;middle = text[<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-accent">len</span>(text)//2 :<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-accent">len</span>(text)//2 + part_len<br>
+&nbsp;&nbsp;&nbsp;&nbsp;]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;last = text[-part_len:]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="t-key">return</span> first + <span class="t-string">" "</span> + middle + <span class="t-string">" "</span> + last
+                </div>
+              </div>
+              <p class="code-desc">BERT의 입력 길이 제한(512 토큰)을 고려하여 장문의 기사를 도입부·중간·결론 3등분으로 균등하게 추출합니다. 문맥 손실을 최소화하면서도 모든 주요 정보를 포함하는 입력 설계입니다.</p>
+            </div>
           </div>
         </div>
 
