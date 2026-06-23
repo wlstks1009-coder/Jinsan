@@ -351,7 +351,7 @@ section { padding: 110px 56px; }
 .architecture-box {
   background: var(--bg-primary);
   border: 1px solid var(--border-color);
-  padding: 40px 28px;
+  padding: 40px 40px;
   border-radius: 2px;
   overflow-x: auto;
 }
@@ -360,10 +360,14 @@ section { padding: 110px 56px; }
 .arch-flow {
   display: flex;
   flex-direction: row;
-  align-items: center;   /* 모든 자식을 수직 중앙 정렬 */
-  justify-content: center;
-  gap: 0;
+  align-items: center;
+  /* justify-content: center; -> 아래 중 하나로 변경 */
+  justify-content: space-between; /* 양 끝 노드는 벽에 붙고, 사이 간격이 유연하게 벌어짐 */
+  /* 또는 justify-content: space-around; (양 끝에도 약간의 여백을 두고 벌어짐) */
+  
+  gap: 10; /* 제거하거나, 화면이 아주 작아졌을 때의 최소 간격(예: 10px)만 지정 */
   min-width: 760px;
+  width: 100%; /* 부모 너비를 100% 채워야 여백 분배가 일어납니다 */
 }
 
 /* 단일 스텝 노드 */
@@ -376,7 +380,7 @@ section { padding: 110px 56px; }
   gap: 5px;
   width: 128px;
   height: 100px;          /* 고정 높이 → 분기 노드와 동일하게 맞춤 */
-  padding: 0 14px;
+  padding: 30px 14px;
   background: var(--bg-surface3);
   border: 1px solid var(--border-color);
   flex-shrink: 0;
@@ -441,7 +445,7 @@ section { padding: 110px 56px; }
   text-align: center;
   gap: 4px;
   width: 148px;
-  height: 50px;           /* 두 카드 합산 100px = arch-step 높이와 동일 */
+  height: 70px;           /* 두 카드 합산 100px = arch-step 높이와 동일 */
   padding: 0 12px;
   background: var(--bg-surface3);
   border: 1px solid var(--border-color);
@@ -900,7 +904,7 @@ footer { padding: 28px 56px; border-top: 1px solid var(--border-color); display:
         </div>
 
         <!-- 아키텍처 -->
-        <div style="margin-top: 48px; margin-bottom: 48px;">
+        <div style="margin-top: 4px; margin-bottom: 48px;">
           <h3 style="font-family: 'Syne', sans-serif; font-size: 1.4rem; font-weight: 700; margin-bottom: 32px; color: var(--text-primary);">Architecture</h3>
           <div class="architecture-box">
             <div class="arch-flow">
@@ -929,7 +933,7 @@ footer { padding: 28px 56px; border-top: 1px solid var(--border-color); display:
                   <span class="arch-branch-label">Branch A</span>
                   <span class="arch-branch-title">BERT 감성 분석</span>
                   <span class="arch-branch-sub">기사 문맥 기반 위험 신호 추출</span>
-                </div>
+                </div><br>
                 <div class="arch-branch-step">
                   <span class="arch-branch-label">Branch B</span>
                   <span class="arch-branch-title">경제 지표 분석</span>
@@ -943,7 +947,7 @@ footer { padding: 28px 56px; border-top: 1px solid var(--border-color); display:
               <div class="arch-step arch-highlight">
                 <span class="arch-step-label">Step 04</span>
                 <span class="arch-step-title">위험도 산정</span>
-                <span class="arch-step-sub">AI + 경제 지표 하이브리드 점수</span>
+                <span class="arch-step-sub">AI + 경제 지표<br> 하이브리드 점수</span>
               </div>
 
               <div class="arch-arrow-h">→</div>
@@ -967,7 +971,7 @@ footer { padding: 28px 56px; border-top: 1px solid var(--border-color); display:
             <!-- Algorithm 01: AI + 경제지표 기반 위험도 산정 -->
             <div class="code-item">
               <div class="code-header">
-                <span class="code-label">Algorithm 01</span>
+                <span class="code-label">IMPLEMENTATION 01</span>
                 <span class="code-title">AI + 경제지표 기반 위험도 산정</span>
               </div>
               <div class="terminal-card">
@@ -1003,7 +1007,7 @@ risk_lv = <span class="t-string">"심각"</span> <span class="t-key">if</span> t
             <!-- Algorithm 02: 경제지표 위험도 계산 -->
             <div class="code-item">
               <div class="code-header">
-                <span class="code-label">Algorithm 02</span>
+                <span class="code-label">IMPLEMENTATION 02</span>
                 <span class="code-title">경제지표 위험도 계산</span>
               </div>
               <div class="terminal-card">
@@ -1041,7 +1045,7 @@ raw_indicator_score = (ex_score * <span class="t-string">0.5</span> + ma_score *
             <!-- Algorithm 03: BERT 입력 최적화 -->
             <div class="code-item">
               <div class="code-header">
-                <span class="code-label">Algorithm 03</span>
+                <span class="code-label">IMPLEMENTATION 03</span>
                 <span class="code-title">BERT 입력 최적화</span>
               </div>
               <div class="terminal-card">
